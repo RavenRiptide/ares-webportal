@@ -16,7 +16,7 @@
         <label for="date" class="col-form-label">Date:</label>
     </div>
     <div class="col-sm-9">
-         <PikadayInput @onSelection={{action "changeDate"}} @format={{this.model.app.game.date_entry_format}} /> 
+         <PikadayInput @firstDay={{0}} @onSelection={{action "changeDate"}} @format={{this.model.app.game.date_entry_format}} /> 
     </div> 
   </div>
   
@@ -66,8 +66,8 @@
   </div>
   
      
-<div class="pull-right">
-  <LinkTo @route="events" class="btn btn-default">Cancel</LinkTo>
+<div class="action-buttons">
+  <LinkTo @route="events" class="btn btn-secondary">Cancel</LinkTo>
   <button {{action "create"}} class="btn btn-primary">Create</button>
 </div>
 

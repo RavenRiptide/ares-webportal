@@ -12,8 +12,8 @@
                    <div class="site-subtitle">{{this.mushHost}} port {{this.mushPort}}</div>
                </div>
                
-               <div class="col-md-6 hidden-sm hidden-xs" role="navigation">
-                  <div class="text-right user-bar">
+               <div class="col-md-6 d-none d-lg-block" role="navigation">
+                  <div class="float-end user-bar">
                    {{#if this.isAuthenticated}}
                        <p>Welcome, {{this.currentUser.name}}. 
                         {{#if this.model.alts}}
@@ -23,7 +23,7 @@
                        
                        <p>
                            <LinkTo @route="notifications">
-                               <span class="label label-pill label-primary"><i class="fa fa-bell" aria-label='Unread Notifications'></i>
+                               <span class="badge rounded-pill bg-primary"><i class="fa fa-bell" aria-label='Unread Notifications'></i>
                                <span id="notificationBadge">{{this.model.notification_count}}</span>
                                </span>
                            </LinkTo> 
@@ -79,6 +79,10 @@
                {{/if}}
                
                {{outlet}}
+               
+               {{#if (not this.socketConnected)}}
+                 <div class="alert alert-warning">The website is not receiving live updates from the game.  Try reloading the page.</div>
+               {{/if}}
              </div>
          {{else}}
              <div class="col-md-9 body-container {{if this.model.left_sidebar 'right-body' 'left-body'}}" role="main">
@@ -113,7 +117,7 @@
         <tr><td>
         <CharIconInline @char={{alt}} @hideLink="true" />
         </td>
-        <td><a href="#" {{action 'switchAlt' alt.name}} class="btn btn-default">Switch</a></td>
+        <td><a href="#" {{action 'switchAlt' alt.name}} class="btn btn-secondary">Switch</a></td>
         </tr>
       {{/if}}
     {{/each}}

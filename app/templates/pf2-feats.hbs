@@ -1,0 +1,22 @@
+{{page-title 'Feats'}}
+<h1>Feats</h1>
+
+<h2>This is literally all the feats lol we'll make more granular lists later</h2>
+
+<table class="table table-striped">
+
+<thead>
+    <th>Feat</th>
+    <th>Description</th>
+</thead>
+
+<tbody>
+{{#each this.model.pf2e_feats_all as |feat|}}
+<tr>
+    <td><LinkTo @route="pf2-feats" @models={{array feat.key}}>{{feat.name}}</LinkTo></td> 
+    <td>{{feat.shortdesc}}</td>
+</tr>
+{{/each}}
+</tbody>
+</table>
+

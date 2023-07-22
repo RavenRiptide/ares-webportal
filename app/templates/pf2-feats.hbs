@@ -3,7 +3,7 @@
 
 Pathfinder 2e has three types of feats: <b>General</b> feats, <b>Skill</b> feats, and <b>Class</b> feats.
 
-<h2>All Feats</h2>
+<h2>General Feats</h2>
 
 <table class="table table-striped">
 
@@ -11,14 +11,13 @@ Pathfinder 2e has three types of feats: <b>General</b> feats, <b>Skill</b> feats
     <th>Feat</th>
     <th>Description</th>
 </thead>
-
+general
 <tbody>
-{{#each this.model as |feat|}}
+{{#each this.model.general as |feat|}}
 <tr>
-    <td><LinkTo @route="pf2-feats" @models={{array 'pf2e-feats' feat.key}}>{{feat.name}}</LinkTo></td> 
+    <td><LinkTo @route="pf2-feats" @models={{array 'general' feat.key}}></LinkTo></td> 
     <td>{{feat.shortdesc}}</td>
 </tr>
 {{/each}}
 </tbody>
 </table>
-

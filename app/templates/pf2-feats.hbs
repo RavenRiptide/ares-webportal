@@ -15,7 +15,7 @@ general
 <tbody>
 {{#each this.model.general as |feat|}}
 <tr>
-    <td><LinkTo @route="pf2-feats" @models={{array 'general' feat.key}}></LinkTo></td> 
+    <td><LinkTo @route="pf2-feats" @models={{array "feat_type" feat.key}}></LinkTo></td> 
     <td>{{feat.shortdesc}}</td>
 </tr>
 {{/each}}

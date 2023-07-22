@@ -1,7 +1,9 @@
 {{page-title 'Feats'}}
 <h1>Feats</h1>
 
-<h2>This is literally all the feats lol we'll make more granular lists later</h2>
+Pathfinder 2e has three types of feats: <b>General</b> feats, <b>Skill</b> feats, and <b>Class</b> feats.
+
+<h2>General Feats</h2>
 
 <table class="table table-striped">
 
@@ -9,14 +11,13 @@
     <th>Feat</th>
     <th>Description</th>
 </thead>
-
+general
 <tbody>
-{{#each this.model.pf2e_feats_all as |feat|}}
+{{#each this.model.general as |feat|}}
 <tr>
-    <td><LinkTo @route="pf2-feats" @models={{array feat.key}}>{{feat.name}}</LinkTo></td> 
+    <td><LinkTo @route="pf2-feats" @models={{array "feat_type" feat.key}}></LinkTo></td> 
     <td>{{feat.shortdesc}}</td>
 </tr>
 {{/each}}
 </tbody>
 </table>
-

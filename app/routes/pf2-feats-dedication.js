@@ -7,7 +7,7 @@ export default Route.extend(DefaultRoute, {
     
     model: function() {
         let api = this.gameApi;
-        return api.requestOne('pf2FeatsDedication');
+        return api.requestOne('pf2DedicationFeats');
     },
         
 });

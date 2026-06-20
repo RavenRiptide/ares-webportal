@@ -14,14 +14,14 @@
       <div class="card-body">
 
         {{#if this.model.handle}}
-        <p>Your character is linked to the handle <b>{{this.model.handle}}</b>.  Visit <a href="http://arescentral.aresmush.com" target="_blank" rel="nofollow noopener">AresCentral</a> to manage your handle preferences.</p>
+        <p>Your character is linked to the handle <b>{{this.model.handle}}</b>.  Visit <a href="https://arescentral.aresmush.com" target="_blank" rel="nofollow noopener">AresCentral</a> to manage your handle preferences.</p>
         {{else}}
 
 
         <p>To set up a player handle:</p>
 
         <ol>
-          <li>Visit <a href="http://arescentral.aresmush.com" target="_blank" rel="nofollow noopener">AresCentral</a>  and register your handle account.</li>
+          <li>Visit <a href="https://arescentral.aresmush.com" target="_blank" rel="nofollow noopener">AresCentral</a>  and register your handle account.</li>
           <li>At AresCentral, go to 'My Account -> Manage Characters'.</li>
           <li>Click 'Get A New Link Code' and copy the code it gives you.</li>
           <li>Enter the handle name and the code below and click 'Link to Handle'.</li>
@@ -33,7 +33,7 @@
           <p><Input @type="text" placeholder="Link Code" id="linkCode" @value={{this.linkCode}} /></p>
           <p><Input @type="password" placeholder="Confirm Password" id="confirmPasswordHandle" @value={{this.confirmPasswordHandle}} /></p>
         
-          <button {{action "linkHandle"}} class="btn btn-primary">Link to Handle</button>
+          <button {{on 'click' this.linkHandle}} class="btn btn-primary">Link to Handle</button>
         
         {{/if}}
         
@@ -59,7 +59,7 @@
           <p><Input @type="password" placeholder="Password" id="newPassword" @value={{this.newPassword}} /></p>
           <p><Input @type="password" placeholder="Confirm New Password"  id="confirmPassword" @value={{this.confirmPassword}} /></p>
         
-          <button {{action "changePassword"}} class="btn btn-primary">Change Password</button>
+          <button {{on 'click' this.changePassword}} class="btn btn-primary">Change Password</button>
                 
       </div>
   </div>
@@ -93,6 +93,17 @@
             </div>
           </div>
         
+        <div class="card card-default">
+          <div class="card-heading">
+            Alias <LinkTo @route="help-topic" @model="alias" target="_blank"><i class="fas fa-info-circle"></i></LinkTo>
+          </div>
+        
+          <div class="card-body">
+                      
+            <p><Input placeholder="Alias" id="alias" @value={{this.model.alias}} /></p>
+          </div>
+        </div>
+        
           <div class="card card-default">
             <div class="card-heading">
               Email <LinkTo @route="help-topic" @model="email" target="_blank"><i class="fas fa-info-circle"></i></LinkTo>
@@ -113,10 +124,10 @@
               <div class="card-body">
           
                 {{#if this.model.handle}}
-                <p>Your timezone is {{this.model.timezone}}. Visit <a href="http://arescentral.aresmush.com" target="_blank" rel="nofollow noopener">AresCentral</a> to manage your timezone, which will apply to all characters linked to your handle.</p>
+                <p>Your timezone is {{this.model.timezone}}. Visit <a href="https://arescentral.aresmush.com" target="_blank" rel="nofollow noopener">AresCentral</a> to manage your timezone, which will apply to all characters linked to your handle.</p>
                 {{else}}
                 
-                <PowerSelect @selected={{this.model.timezone}}  @options={{this.model.timezones}} @searchEnabled=true @onChange={{action "timezoneChanged"}} as |tz|>
+                <PowerSelect @selected={{this.model.timezone}}  @options={{this.model.timezones}} @searchEnabled=true @onChange={{this.timezoneChanged}} as |tz|>
                    {{tz}}
                  </PowerSelect>
                                              
@@ -141,17 +152,59 @@
                 </div>
               </div>
               
+              <div class="card card-default">
+                  <div class="card-heading">
+                    Website Editor
+                  </div>
+    
+                  <div class="card-body">
+          
+                    <div class="alert alert-info">
+                      Note: This setting applies to all alts on this game.
+                    </div>
+                  
+                <PowerSelect @selected={{this.model.editor}}  @options={{this.model.editors}} @onChange={{this.editorChanged}} as |ed|>
+                   {{ed}}
+                 </PowerSelect>
+                  </div>
+                </div>
+              
             
             
             
           
           <p><Input @type="password" id="passwordEmail" placeholder="Confirm Password" @value={{this.confirmPasswordSettings}} /></p>
-          <button {{action "changeSettings"}} class="btn btn-primary">Save Settings</button>
+          <button {{on 'click' this.changeSettings}} class="btn btn-primary">Save Settings</button>
              
           <FlashMessages />
                 
       </div>
+          
   </div>
 </div>
 
+
+<h2>Block List</h2>
+
+<p>If a player is acting inappropriately, you are encouraged to report their behavior to the admin. If you need to, you can also block them from contacting you.</p>
+
+<LinkTo @route="blocks" class="btn btn-secondary">Manage Blocks</LinkTo>  
+
+<h2>Backup</h2>
+
+
+{{#if this.model.backup}}
+  <p>Download the backup of your character's profile, scenes, etc.</p>
+  <a href="{{this.model.backup}}" class="btn btn-secondary">Download Backup</a>
+{{else if this.backupInProgress}}
+  <div class="alert alert-info">Your backup is being created. Check back in a few minutes.</div>
+{{else}}
+  <p>You can create a backup of your character's profile, scenes, etc.</p>
+  <button {{on 'click' this.createBackup}} class="btn btn-primary">Create Backup</button>
+{{/if}}
+
+<FlashMessages />
+                
+
 {{outlet}}
+

@@ -25,6 +25,7 @@ Router.map(function() {
   this.route('area-edit', { path: '/area/:id/edit'});
   this.route('area-create', { path: '/area/create'});
   this.route('banned');
+  this.route('blocks');
   this.route('census');
   this.route('census-group', { path: '/census/:filter' });
   this.route('characters', { path: '/chars'});
@@ -38,7 +39,6 @@ Router.map(function() {
   this.route('channels-manage');
   this.route('channel-create');
   this.route('channel-edit', { path: '/channel-edit/:id' });
-  this.route('client');
   this.route('combat', { path: '/combat/:id' });
   this.route('combat-log', { path: '/combat/:id/log' });
   this.route('combat-teams', { path: '/combat/:id/teams' });
@@ -95,6 +95,7 @@ Router.map(function() {
   this.route('mail-message', { path: '/mail/:id'});
   this.route('mail-send');
   this.route('manage');
+  this.route('motd-edit', { path: '/motd/edit' });
   this.route('notes', { path: '/char/:id/notes' });
   this.route('notes-edit', { path: '/char/:id/notes/edit' });
   this.route('notifications');
@@ -138,6 +139,7 @@ Router.map(function() {
   this.route('textfile', { path: '/textfile/:file_type/:file' });
   this.route('tinker');
   this.route('tos');
+  this.route('tour');
   this.route('who');
   this.route('wiki');
   this.route('wiki-archive');

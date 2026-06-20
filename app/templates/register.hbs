@@ -1,5 +1,7 @@
 {{page-title 'Register Character'}}
-{{#if this.model.enable_registration}}
+{{#if this.model.allow_registration}}
+
+<h1>Register a Character</h1>
 
 <p>Enter your character information.  Your web login will be the same as your game login.</p>
         
@@ -10,15 +12,22 @@
 <div class="card card-default">
     <div class="card-body">
         
-        <p><Input @type="text" id="name" placeholder="Name" @enter={{action "register"}} @value={{this.name}} autofocus={{true}} /></p>
-        <p><Input @type="password" placeholder="Password" @enter={{action "register"}} id="password" @value={{this.password}} /></p>
-        <p><Input @type="password" placeholder="Confirm Password" @enter={{action "register"}} id="confirmPassword" @value={{this.confirmPassword}} /></p>
+        <p><Input @type="text" id="name" placeholder="Name" @enter={{this.register}} @value={{this.name}} autofocus={{true}} /></p>
+        <p><Input @type="password" placeholder="Password" @enter={{this.register}} id="password" @value={{this.password}} /></p>
+        <p><Input @type="password" placeholder="Confirm Password" @enter={{this.register}} id="confirmPassword" @value={{this.confirmPassword}} /></p>
         
-        {{#if this.model.recaptcha}}
-        <GRecaptcha @onSuccess={{action "recaptchaResolved"}} @ref={{mut this.recaptchaControl}} @sitekey={{this.model.recaptcha}} />
-        {{/if}}
+        <button {{on 'click' this.register}} class="btn btn-primary">Register</button>
+        
+        <div class="captcha-block">
+        
+          {{#if this.model.turnstile}}
+          <TurnstileWidget @response={{this.turnstileResponse}} @onResetAvail={{this.setTurnstileReset}} @sitekey={{this.model.turnstile}} />
 
-        <button {{action "register"}} class="btn btn-primary">Register</button>
+          {{else if this.model.recaptcha}}
+          <GRecaptcha @onSuccess={{this.recaptchaResolved}} @onRender={{this.setRecaptchaRef}} @sitekey={{this.model.recaptcha}} />
+        
+          {{/if}}
+        </div>
         
     </div>
 </div>

@@ -1,0 +1,28 @@
+
+
+{{#each this.plots as |plot|}}
+  
+<div class="plot-container">
+  <div class="plot-header">
+      <LinkTo @route="plot" @model={{plot.id}} class="plot-title">{{plot.title}}</LinkTo>
+      {{#if plot.content_warning}}
+      <ContentWarningTag @warning={{plot.content_warning}} />
+      {{/if}}          
+  </div>
+  <div class="plot-subheader">
+      <div class="plot-storytellers">
+        <i class="plot-storytellers-icon fa-solid fa-user-pen"></i>
+        {{#each plot.storytellers as |storyteller|}}
+          <CharIconTiny @char={{storyteller}} />
+        {{/each}}
+      </div>
+      <div class="plot-dates">
+      <i class="plot-dates-icon fa-solid fa-calendar"></i>
+      {{plot.start_date}} - {{plot.end_date}}
+      </div>
+  </div>
+  <div class="plot-summary">
+      <AnsiFormat @text={{plot.summary}} />
+  </div>
+</div>
+{{/each}}

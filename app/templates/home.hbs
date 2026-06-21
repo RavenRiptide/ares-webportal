@@ -5,15 +5,18 @@
 <hr>
 
   <div class="splash">
-
-    <p>What's a MUSH? A MUSH is a text-based storytelling medium that incorporates elements of writing, improvisational acting, and world-building. If you've never done anything like this before, check out our <a href="/wiki/resource:new-player">New Player Guide</a>.</p>
-
-    <p>You can play via the <b>Web Portal</b>, which lets you interact with the game from a web browser. While we currently require that character generation be done via a MUSH client, you can browse the game's <LinkTo @route="wiki">wiki</LinkTo>, read <LinkTo @route="scenes">scene logs</LinkTo> and more from here, and once you are approved, you can <LinkTo @route="scenes-live">join scenes</LinkTo> as well.</p>
-
-    <p>If you prefer to play via a MUSH client, you can point your favorite <a href="https://aresmush.com/clients/" target="_blank" rel="nofollow noopener">MU client</a> at <b>{{this.model.game.host}} port {{this.model.game.port}}</b>, or connect to the game with the <LinkTo @route="client">web client</LinkTo>.</p>
-  
-  </div>
-
-</div>
+          
+            <p>{{this.model.game.name}} is a MUSH - a multi-player text-based storytelling game.</p>
+            
+            <p>New to MUSHing?  Check out the <a href="https://aresmush.com/mush-101" target="_blank"  rel="nofollow noopener">MUSH 101 Tutorial</a>.</p>
+              
+              <p>This is the <b>Web Portal</b>, which lets you play from a web browser. You can also point your favorite MU client at <b>{{this.model.game.host}} port {{this.model.game.port}}</b>.</p>
+            
+            <p>Not ready to make a character yet? 
+              <LinkTo @route="tour">Tour the game</LinkTo> with a temporary one.
+            </p>
+    </div>
+            
+</div>        
 
 {{outlet}}

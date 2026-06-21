@@ -1,4 +1,6 @@
 {{page-title 'Log In'}}
+<h1>Log In</h1>
+
 <p>Log in using your character information. Your web login is the same as your game login.</p>
 
 
@@ -10,13 +12,16 @@
 <div class="card card-default">
     <div class="card-body">
 
-        <p><Input @type="text" id="name" placeholder="Name" @enter={{action "login"}} @value={{this.name}} autofocus={{true}} /></p>
-        <p><Input @type="password" placeholder="Password" @enter={{action "login"}} id="password" @value={{this.password}} /></p>
+        <p><Input @type="text" id="name" placeholder="Name" @enter={{this.login}} @value={{this.name}} autofocus={{true}} /></p>
+        <p><Input @type="password" placeholder="Password" @enter={{this.login}} id="password" @value={{this.password}} /></p>
         
-        <button {{action "login"}} class="btn btn-primary">Login</button>
-            
+        <button {{on 'click' this.login}} class="btn btn-primary">Login</button>
+        
+    </div>
+</div>
+
         <p>Don't have a character yet? 
-        {{#if this.model.enable_registration}}
+        {{#if this.model.allow_registration}}
         <LinkTo @route="register">Create one.</LinkTo>
         {{else}}
         Create one from inside the game first.
@@ -24,7 +29,10 @@
         
         </p>
         
-    </div>
-</div>
+        {{#if this.model.allow_tour}}
+        <p>Not ready to make a character? 
+          <LinkTo @route="tour">Tour the game</LinkTo> with a temporary one.
+        </p>
+        {{/if}}
 
 {{outlet}}

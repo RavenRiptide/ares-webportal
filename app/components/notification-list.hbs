@@ -1,0 +1,43 @@
+<table class="table table-striped notifications-list">
+
+<tbody>
+  {{#each this.notices as |notification|}}
+  <tr>
+    <td>{{#if notification.is_unread}}
+          <span class="badge rounded-pill bg-primary"> <i class="fa fa-flag" aria-label="Unread Notification"></i></span>
+          {{/if}}
+        </td>
+    <td>{{notification.timestamp}}</td>
+    <td><AnsiFormat @text={{notification.message}}/></td>
+    <td>
+    
+      <div class="notification-controls">
+        {{#if (eq notification.type 'mail')}}
+          <TooltipButton @position="left" @message="View" @icon="fa fa-eye" @route="mail-message" @model={{notification.reference_id}} />
+        {{else if (eq notification.type 'forum')}}
+          <TooltipButton @position="left" @message="View" @icon="fa fa-eye" @route="forum-topic" @models={{array (get notification.data 0) (get notification.data 1)}} />
+        {{else if (eq notification.type 'job')}}
+          <TooltipButton @position="left" @message="View" @icon="fa fa-eye" @route="job" @model={{notification.reference_id}} />
+        {{else if (eq notification.type 'pm')}}
+          <TooltipButton @position="left" @message="View" @icon="fa fa-eye" @route="chat" />
+        {{else if (eq notification.type 'scene')}}
+          <TooltipButton @position="left" @message="View" @icon="fa fa-eye" @route="scene-live" @model={{notification.reference_id}} />
+        {{else if (eq notification.type 'scene_deletion')}}
+          <TooltipButton @position="left" @message="View" @icon="fa fa-eye" @route="scene-live" @model={{notification.reference_id}} />
+        {{else if (eq notification.type 'event')}}
+          <TooltipButton @position="left" @message="View" @icon="fa fa-eye" @route="event" @model={{notification.reference_id}} />
+        {{else if (eq notification.type 'achievement')}}
+          <TooltipButton @position="left" @message="View" @icon="fa fa-eye" @route="char" @model={{this.char.name}} />
+        {{/if}}
+      
+        {{#if notification.is_unread}}
+          <TooltipButton @onClick={{(fn this.markRead notification false)}} @position="left" @message="Mark Read" @icon="fa fa-ban" />
+        {{else}}
+          <TooltipButton @onClick={{(fn this.markRead notification true)}} @position="left" @message="Mark Unread" @icon="fa fa-flag" />  
+          {{/if}}
+      </div>
+    </td>
+  </tr>
+  {{/each}}
+  </tbody>
+</table>

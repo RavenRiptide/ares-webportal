@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
 export default Component.extend({
   tagName: '',
@@ -8,7 +9,7 @@ export default Component.extend({
   flashMessages: service(),
   selectSkillRoll: false,
   
-  approveRoster: function(approved) {
+  handleApproval: function(approved) {
     this.gameApi.requestOne('approveRoster', { name: this.get('job.roster_name'), approved: approved })
     .then((response) => {
       if (response.error) {
@@ -19,27 +20,33 @@ export default Component.extend({
     });
   },
   
+  @action
+  closeJob() {
+    let api = this.gameApi;
+    api.requestOne('jobClose', { id: this.get('job.id')})
+    .then( (response) => {
+      if (response.error) {
+        return;
+      }
+      this.router.transitionTo('jobs');
+      this.flashMessages.success('Job closed.');
+    });
+  },
+    
+  @action
+  approveRoster() {
+    this.handleApproval(true);
+  },
+    
+  @action
+  rejectRoster() {
+    this.handleApproval(false);
+  },
   
-  actions: {
-    
-    closeJob() {
-      let api = this.gameApi;
-      api.requestOne('jobClose', { id: this.get('job.id')})
-      .then( (response) => {
-        if (response.error) {
-          return;
-        }
-        this.router.transitionTo('jobs');
-        this.flashMessages.success('Job closed.');
-      });
-    },
-    approveRoster: function() {
-      this.approveRoster(true);
-    },
-    
-    rejectRoster: function() {
-      this.approveRoster(false);
-    }
-  }
+  @action
+  showSelectSkillRoll(value) {
+    this.set('selectSkillRoll', value);
+  },
+  
   
 });

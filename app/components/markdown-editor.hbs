@@ -1,0 +1,44 @@
+<div class="card card-default markdown-editor">
+    <div class="card-body markdown-editor">
+      
+      <div class="markdown-controls">
+  
+          
+          {{#if this.previewText}}
+             <button class="markdown-control-toggle" {{on 'click' this.preview}}>Write</button>
+             <button class="markdown-control-toggle active">Preview</button>
+          {{else}}
+             <button class="markdown-control-toggle active">Write</button>
+             <button class="markdown-control-toggle" {{on 'click' this.preview}}>Preview</button>
+          {{/if}}
+          
+          <TooltipButton @position="left" @message="Formatting help." @icon="fa fa-question-circle" @route="help" @target="_blank" />
+    
+          <TooltipButton @position="left" @message="Emoji help." @icon="fa fa-smile" @route="emoji" @target="_blank" />
+                              
+          <TooltipButton @onClick={{this.toggleEditor}} @position="left" @message="Switch editor style." @icon="fa fa-toolbox" />          
+    </div>
+
+{{#if this.previewText}}
+  <div class="markdown-preview">
+    <AnsiFormat @text={{this.previewText}} />
+  </div>
+{{else}}
+
+{{#if (eq this.editor "Classic")}}
+  <Textarea @value={{this.text}} cols={{80}} rows={{this.rows}} @keydown={{this.keyDown}} aria-label="Markdown Editor" />
+{{else}}
+  <TuiEditor 
+    @value={{this.markdownText}} 
+    @onChange={{this.onChange}} 
+    aria-label="Markdown Editor" 
+    @onInit={{this.onInit}}
+    @height="{{this.height}}"
+    @minHeight="{{this.height}}"
+    />
+{{/if}}
+
+{{/if}}
+
+</div>
+</div>

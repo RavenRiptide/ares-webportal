@@ -48,13 +48,13 @@
         <div class="job-participant-edit-box">
        
           {{#if this.editParticipants}}
-           <PowerSelectMultiple @selected={{this.newParticipants}} @options={{this.model.characters}} @searchEnabled=true @searchField="name" @onChange={{action "participantsChanged"}} as |char|>
+           <PowerSelectMultiple @selected={{this.newParticipants}} @options={{this.model.characters}} @searchEnabled=true @searchField="name" @onChange={{this.participantsChanged}} as |char|>
             {{char.name}}
           </PowerSelectMultiple>
-          <button class="btn btn-secondary" {{action (mut this.editParticipants) false}}>Cancel</button>
-          <button class="btn btn-primary" {{action 'saveParticipants'}}>Save</button>
+          <button class="btn btn-secondary" {{on 'click' (fn this.setEditParticipants false)}}>Cancel</button>
+          <button class="btn btn-primary" {{on 'click' this.saveParticipants}}>Save</button>
         {{else}}
-          <button class="btn btn-secondary" {{action (mut this.editParticipants) true}}>Edit</button>
+          <button class="btn btn-secondary" {{on 'click' (fn this.setEditParticipants true)}}>Edit</button>
         {{/if}}
         
           </div>
@@ -75,7 +75,7 @@
       
           <DropdownMenu @id="assignDropdown" @title="Assign">
             {{#each this.model.job.job_admins as |staff| }}
-              <li><a href="#" {{action 'assignJob' staff}} class="dropdown-item">{{staff.name}}</a></li>
+              <li><button {{on 'click' (fn this.assignJob staff)}} class="dropdown-item">{{staff.name}}</button></li>
             {{/each}}
           </DropdownMenu>
         {{/if}}
@@ -94,7 +94,7 @@
       
           <DropdownMenu @id="statusDropdown" @title="Status">
             {{#each this.model.options.status_values as |status| }}
-              <li><a href="#" {{action 'changeData' 'status' status}} class="dropdown-item"><span class="badge job-status job-status-{{status}}">&nbsp;</span> {{status}}</a></li>
+              <li><button {{on 'click' (fn this.changeData 'status' status)}} class="dropdown-item"><span class="badge job-status job-status-{{status}}">&nbsp;</span> {{status}}</button></li>
             {{/each}}
           </DropdownMenu>
         {{/if}}
@@ -116,7 +116,7 @@
       
         <DropdownMenu @id="categoryDropdown" @title="Category">
               {{#each this.model.options.category_values as |category| }}
-                <li><a href="#" {{action 'changeData' 'category' category}} class="dropdown-item"><span class="badge job-category job-category-{{category}}">&nbsp;</span> {{category}}</a></li>
+                <li><button {{on 'click' (fn this.changeData 'category' category)}} class="dropdown-item"><span class="badge job-category job-category-{{category}}">&nbsp;</span> {{category}}</button></li>
               {{/each}}
         </DropdownMenu>
         {{/if}}
@@ -171,11 +171,14 @@
 
 <p><a href="#bottom"><i class="fas fa-angle-double-down"></i> Jump to End</a></p>
 
-<hr>
+<h2>Description</h2>
 
     <AnsiFormat @text={{this.model.job.description}} />
 
-<hr>
+
+<h2>Comments</h2>
+
+
 
 {{#each this.model.job.replies as |r|}}
  <div class="job-reply {{if r.admin_only 'admin-only-reply' '' }}">
@@ -184,7 +187,7 @@
          <p>{{r.created}}</p>
      
          {{#if this.model.job.is_job_admin}}
-           <a href="#" {{action 'deleteReply' r.id}}><i class="fa fa-trash" aria-label="Delete Reply"></i></a>     
+           <TooltipButton @onClick={{(fn this.setReplyToDelete r)}} @icon="fa fa-trash" @message="Delete Reply" />
          {{/if}}
      
      </div>
@@ -224,21 +227,21 @@
     {{/if}}
     <div>
     </div>
-        <MarkdownEditor @text={{this.reply}} />
+        <MarkdownEditor @text={{this.reply}} @onEnter={{this.addReply}} />
     </div>
     
     {{#if this.model.job.is_category_admin}}    
       {{#if this.model.job.responses}}
         <div class="preset-responses">
           <b>Pre-Made Responses:</b>
-           <PowerSelect @selected='' @options={{this.model.job.responses}} @searchEnabled=true @searchField="name" @onChange={{action "responseSelected"}} as |resp|>
+           <PowerSelect @selected='' @options={{this.model.job.responses}} @searchEnabled=true @searchField="name" @onChange={{this.responseSelected}} as |resp|>
             {{resp.name}}
           </PowerSelect>
         </div>
       {{/if}}
     {{/if}}    
         <div class="action-buttons">
-          <button class="btn btn-primary" {{action 'addReply'}}>
+          <button class="btn btn-primary" {{on 'click' this.addReply}}>
             {{#if this.replyAdminOnly}}
             Reply to Admins
             {{else}}
@@ -252,13 +255,17 @@
     
 <a name="bottom"></a>
 
-<p><a href="#top"><i class="fas fa-chevron-circle-up"></i> Jump to Top</a></p>
+<p><a href="#top"><i class="fas fa-angle-double-up"></i> Jump to Top</a></p>
 
 
 {{#if this.model.job.is_open }}
   <JobMenu @job={{this.model.job}} @abilities={{this.model.abilities}} @options={{this.model.options}} @id="jobMenuBottom" />
 {{/if}}
   
+
+<BsModalSimple @title="Confirm Delete" @closeTitle="Cancel" @submitTitle="Confirm" @size={{null}} @fade={{true}} @open={{this.replyToDelete}} @onSubmit={{this.deleteReply}} @onHide={{(fn this.setReplyToDelete null)}}>
+    You're about to delete a reply. This cannot be undone.  Are you sure?
+  </BsModalSimple>  
        
 <FlashMessages />
 {{outlet}}

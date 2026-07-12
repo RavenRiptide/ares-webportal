@@ -1,0 +1,58 @@
+  <div class="sidebar-box {{this.boxStyle}}">
+    <div class="sidebar-heading">
+        <h2>Looking for RP <i class="fa-solid fa-users"></i></h2>
+    </div>
+    <div class="looking-for-rp">
+
+      
+      
+      {{#each this.custom.lfrp_icons as |char|}}
+      {{#if (eq char.lfrp_type 'scene')}}
+      <div class="lfrp-row">
+        <CharIconInline @char={{char}}/>
+      </div>
+      {{else if this.custom.txt_extra_installed}}
+      <div class="lfrp-row">
+        <CharIconInlineLfrpTxt @char={{char}}/>
+      </div>
+      {{/if}} 
+      {{/each}}
+      <br>
+      <div class="lfrp-buttons">
+      <p>
+        <span class="badge-sidebar-bgs">
+          <a href="#" {{on 'click' this.setSelectLFRP}}>Look for RP</a>
+        </span> 
+        <span class="badge-sidebar-bgs">
+          <a href="#" {{on 'click' this.unsetLFRP}}>Stop Looking for RP</a>
+        </span>
+      </p>
+      </div>
+    </div>
+    <p></p>
+    <BsModalSimple 
+      @title="Look for RP"
+      @closeTitle="Cancel"
+      @submitTitle="Look for RP"
+      @size={{null}}
+      @fade={{true}}
+      @open={{this.selectLFRP}}
+      @onSubmit={{this.setLFRP}} 
+      @onHide={{(fn this.setSelectLFRP false)}}
+      @renderInPlace={{true}}>
+      <PowerSelect
+        @options={{this.hourOptions}}
+        @onChange={{this.hoursToLookChanged}}
+        @selected={{this.hours}}
+        @labelText="How many hours would you like to be looking for?"
+        as |hour|
+        >
+        {{hour}}
+      </PowerSelect>
+      <br>
+      {{#if this.custom.txt_extra_installed}}
+      <label for="txtonly">Only look for a TXT Scene?</label>
+      <Input @id="txtonly" @type="checkbox" @checked={{this.lfrpTxt}} />
+      {{/if}}
+    </BsModalSimple>
+  </div>

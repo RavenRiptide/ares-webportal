@@ -1,0 +1,28 @@
+<span class="inline-block">
+  {{#if this.hideLink}}
+      <CharIconStatusBase @char={{this.char}} @iconClass="small-profile-icon" />
+  {{else}}
+    <LinkTo @route="char" @model={{this.char.name}}>
+        <span class="fa-stack fa-2x">
+        <CharIconStatusBase @char={{this.char}} @iconClass="small-profile-icon" />
+        <i class="fa-solid fa-mobile-retro fa-stack-2x fa-1x"></i>
+        </span>
+    </LinkTo>
+  {{/if}}
+
+{{#if this.hideLink}}
+  {{#if this.char.nick}}
+    {{this.char.nick}}
+  {{else}}
+    {{this.char.name}} 
+  {{/if}}
+{{else}}
+  <LinkTo @route="char" @model={{this.char.name}}> 
+    {{#if this.char.nick}}
+      {{this.char.nick}}
+    {{else}}
+      {{this.char.name}} 
+    {{/if}}
+  </LinkTo>
+{{/if}}
+</span>

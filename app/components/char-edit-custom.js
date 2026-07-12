@@ -13,6 +13,7 @@ export default Component.extend({
     // Return a hash containing your data.  Character data will be in 'char'.  For example:
     // 
     // return { goals: this.get('char.custom.goals') };
-    return {};
+    return { looking_for_rp_announce: this.get('char.custom.looking_for_rp_announce')
+    };
   }
 });

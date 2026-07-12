@@ -1,0 +1,51 @@
+<div class="play-section-title">
+  Looking for RP
+  <TooltipButton @position="right" @message="Look for RP" @icon="fa fa-user-plus" @onClick={{this.setSelectLFRP}} />
+  <TooltipButton @position="right" @message="Stop Looking for RP" @icon="fa fa-user-minus" @onClick={{this.unsetLFRP}} />
+  {{#if this.showLFRP}}
+    <TooltipButton @onClick={{(fn this.setShowLFRP false)}} @position="right" @message="Hide LFRP" @icon="fa fa-caret-square-up" />
+  {{else}}
+    <TooltipButton @onClick={{(fn this.setShowLFRP true)}} @position="right" @message="Show LFRP" @icon="fa fa-caret-square-down" />
+  {{/if}}
+</div>
+
+<div class="looking-for-rp">
+  {{#if this.showLFRP}}
+    {{#each this.model.custom.lfrp_icons as |char|}}
+    {{#if (eq char.lfrp_type 'scene')}}
+    <div class="lfrp-row">
+      <CharIconInline @char={{char}}/>
+    </div>
+    {{else if this.model.custom.txt_extra_installed}}
+    <div class="lfrp-row">
+      <CharIconInlineLfrpTxt @char={{char}}/>
+    </div>
+    {{/if}} 
+    {{/each}}
+      <br>
+  {{/if}}
+  <BsModalSimple 
+      @title="Look for RP"
+      @closeTitle="Cancel"
+      @submitTitle="Look for RP"
+      @size={{null}}
+      @fade={{true}}
+      @open={{this.selectLFRP}}
+      @onSubmit={{this.setLFRP}} 
+      @onHide={{(fn this.setSelectLFRP false)}}>
+      <PowerSelect
+        @options={{this.hourOptions}}
+        @onChange={{this.hoursToLookChanged}}
+        @selected={{this.hours}}
+        @labelText="How many hours would you like to be looking for?"
+        as |hour|
+        >
+        {{hour}}
+      </PowerSelect>
+      <br>
+      {{#if this.model.custom.txt_extra_installed}}
+      <label for="txtonly">Only look for a TXT Scene?</label>
+      <Input @id="txtonly" @type="checkbox" @checked={{this.lfrpTxt}} />
+      {{/if}}
+    </BsModalSimple>
+</div>

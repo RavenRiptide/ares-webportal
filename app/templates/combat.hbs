@@ -4,14 +4,15 @@
 <div class="action-buttons-spaced fs3-combat-controls">
         
     <DropdownMenu @id="combatMenu" @title="Combat Menu">
-          <li><button {{on 'click' (fn this.setShowAddCombatant true)}} class="dropdown-item">Join/Add Combatant</button></li>
+          <li><button {{on 'click' (fn this.setShowAddCombatant true)}} class="dropdown-item"><i class="fa-solid fa-user-plus"></i> Join/Add Combatant</button></li>
           {{#if this.model.can_manage}}
-            <li><LinkTo @route="combat-setup" @model={{this.model.id}} class="dropdown-item">Setup NPCs</LinkTo></li>
-            <li><LinkTo @route="combat-teams" @model={{this.model.id}} class="dropdown-item">Setup Teams</LinkTo></li>
-            <li><button {{on 'click' this.aiActions}} class="dropdown-item">NPC AI Actions</button></li>
-            <li><button {{on 'click' (fn this.setConfirmStopCombat true)}} class="dropdown-item">Stop Combat</button></li>
+            <li><LinkTo @route="combat-setup" @model={{this.model.id}} class="dropdown-item"><i class="fa-solid fa-people-group"></i> Setup NPCs</LinkTo></li>
+            <li><LinkTo @route="combat-teams" @model={{this.model.id}} class="dropdown-item"><i class="fa-solid fa-people-arrows"></i> Setup Teams</LinkTo></li>
+            <li><button {{on 'click' this.aiActions}} class="dropdown-item"><i class="fa-solid fa-robot"></i> NPC AI Actions</button></li>
+            <li><button {{on 'click' (fn this.setConfirmStopCombat true)}} class="dropdown-item"><i class="fa-solid fa-circle-xmark"></i> Stop Combat</button></li>
           {{/if}}
-          <li><LinkTo @route="combat-log" @model={{this.model.id}} class="dropdown-item">View Log</LinkTo></li>
+          <li><LinkTo @route="combat-log" @model={{this.model.id}} class="dropdown-item"><i class="fa-regular fa-file-lines"></i> View Log</LinkTo></li>
+          <li><LinkTo @route="help-topic" @model="fs3combat_tutorial" class="dropdown-item"><i class="fa-regular fa-circle-question"></i> Combat Tutorial</LinkTo></li>
     </DropdownMenu>
       
     <div class="fs3-combat-buttons">

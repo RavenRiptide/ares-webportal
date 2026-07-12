@@ -71,22 +71,11 @@
             {{else}}
                 <div class="scene-pose-header">		
                   {{#if pose.restarted_scene_pose}}
-                      <img alt="System Profile Icon"  class="small-profile-icon <IconClass />"  src="/game/uploads/theme_images/noicon.png" >
+                      <img alt="System Profile Icon"  class="small-profile-icon"  src="/game/uploads/theme_images/noicon.png" >
                       Combined Poses
                   {{else}}
                       <button {{on 'click' (fn this.showCharCard pose.char.name)}} class="btn-link">
-                          {{#if pose.char.icon}}
-                          <img alt="{{pose.char.name}}'s icon" class="small-profile-icon <IconClass />" src="/game/uploads/{{pose.char.icon}}" >
-                          {{else}}
-                          <img alt="{{pose.char.name}}'s icon" class="small-profile-icon <IconClass />" src="/game/uploads/theme_images/noicon.png" >
-                          {{/if}}
-                          
-                          {{#if pose.char.nick}}
-                            {{pose.char.nick}}
-                          {{else}}
-                            {{pose.char.name}} 
-                          {{/if}}
-                          
+                        <CharIconInline @char={{pose.char}} />
                       </button>
                     {{/if}}
                 </div>
@@ -151,7 +140,7 @@
  
             <PoseOrder @poseOrder={{this.scene.pose_order}} @playerName={{this.playerName}} @poseOrderType={{this.scene.pose_order_type}} />
              
-             <MarkdownEditor @text={{this.scene.draftPose}} @rows={{6}} class="scene-pose-box" @onEnter={{(fn this.addPose this.poseType.id)}} />
+             <MarkdownEditor @text={{this.scene.draftPose}} @rows={{10}} class="scene-pose-box" @onEnter={{(fn this.addPose this.poseType.id)}} />
            {{/if}}
    
 

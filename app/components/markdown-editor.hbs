@@ -12,11 +12,53 @@
              <button class="markdown-control-toggle" {{on 'click' this.preview}}>Preview</button>
           {{/if}}
           
-          <TooltipButton @position="left" @message="Formatting help." @icon="fa fa-question-circle" @route="help" @target="_blank" />
+          <TooltipButton @position="left" @message="Formatting help." @icon="fa fa-question-circle" @route="help-topic" @model="markdown" @target="_blank" />
     
           <TooltipButton @position="left" @message="Emoji help." @icon="fa fa-smile" @route="emoji" @target="_blank" />
                               
-          <TooltipButton @onClick={{this.toggleEditor}} @position="left" @message="Switch editor style." @icon="fa fa-toolbox" />          
+          <TooltipButton @onClick={{this.toggleToolbar}} @position="left" @message="Show/hide toolbar." @icon="fa fa-grip" />   
+    </div>
+    
+    <div class="markdown-format-controls {{if (not this.toolbarVisible) 'hidden'}}">
+      <button {{on 'click' this.onBold}}>
+        <TooltipIcon @position="top" @message="Bold" @icon="fa-solid fa-bold" />
+      </button>
+      <button {{on 'click' this.onItalic}}>
+        <TooltipIcon @position="top" @message="Italic" @icon="fa-solid fa-italic" />
+      </button>
+      <button {{on 'click' this.onHeading}}>
+       <TooltipIcon @position="top" @message="Heading" @icon="fa-solid fa-heading" />
+      </button>
+      <button {{on 'click' this.onBulletList}}>
+        <TooltipIcon @position="top" @message="Bulleted List" @icon="fa-solid fa-list" />
+      </button>
+      <button {{on 'click' this.onOrderedList}}>
+        <TooltipIcon @position="top" @message="Numbered List" @icon="fa-solid fa-list-ol" />
+      </button>
+      <div class="markdown-control-divider">|</div>
+      <button {{on 'click' this.onLink}}>
+        <TooltipIcon @position="top" @message="Link" @icon="fa-solid fa-link" />
+      </button>
+      <button {{on 'click' this.onImage}}>
+        <TooltipIcon @position="top" @message="Image" @icon="fa-solid fa-image" />
+      </button>
+      <div class="markdown-control-divider">|</div>
+      <button {{on 'click' this.onTable}}>
+        <TooltipIcon @position="top" @message="Table" @icon="fa-solid fa-table" />
+      </button>
+      <button {{on 'click' this.onLine}}>
+        <TooltipIcon @position="top" @message="Line" @icon="fa-solid fa-minus" />
+      </button>
+      <button {{on 'click' this.onTabs}}>
+        <TooltipIcon @position="top" @message="Tabs" @icon="fa-solid fa-folder-open" />
+      </button>
+      <div class="markdown-control-divider">|</div>
+      <button {{on 'click' this.onCode}}>
+        <TooltipIcon @position="top" @message="Code" @icon="fa-solid fa-code" />
+      </button>
+      <button {{on 'click' this.onCodeBlock}}>
+        <TooltipIcon @position="top" @message="Code Block" @icon="fa-solid fa-file-code" />
+      </button>
     </div>
 
 {{#if this.previewText}}
@@ -24,20 +66,13 @@
     <AnsiFormat @text={{this.previewText}} />
   </div>
 {{else}}
-
-{{#if (eq this.editor "Classic")}}
-  <Textarea @value={{this.text}} cols={{80}} rows={{this.rows}} @keydown={{this.keyDown}} aria-label="Markdown Editor" />
-{{else}}
-  <TuiEditor 
-    @value={{this.markdownText}} 
-    @onChange={{this.onChange}} 
-    aria-label="Markdown Editor" 
-    @onInit={{this.onInit}}
-    @height="{{this.height}}"
-    @minHeight="{{this.height}}"
-    />
-{{/if}}
-
+  <Textarea id="editor-area" 
+    @value={{this.text}} 
+    cols={{80}} 
+    rows={{this.rows}} 
+    @keydown={{this.keyDown}} 
+    aria-label="Markdown Editor">      
+  </Textarea>
 {{/if}}
 
 </div>

@@ -43,9 +43,7 @@ export default Controller.extend(AuthenticatedController, {
         
   @action
   changeSettings() {
-    
-    this.cookies.setEditorPreference(this.get('model.editor'));
-    
+        
     this.gameApi.requestOne('updateAccountInfo', 
     { 
       email: this.get('model.email'), 

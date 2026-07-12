@@ -15,13 +15,13 @@ export default Controller.extend({
   @action
   submit() {
     let api = this.gameApi;
-    api.requestOne('chargenSubmit', { app_notes: this.appNotes })
+    api.requestOne('chargenSubmit', { char_id: this.model.id, app_notes: this.appNotes })
     .then( (response) => {
       if (response.error) {
         return;
       }
       this.flashMessages.success('You have submitted your application.  Check for responses to your app under Help->Requests.');
-      this.router.transitionTo('chargen');
+      this.router.transitionTo('home');
     });   
   }
 });

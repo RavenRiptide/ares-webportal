@@ -8,39 +8,15 @@ export default Controller.extend(ConfirmAction, {
   gameApi: service(),
   flashMessages: service(),
   router: service(),
-  newConfigKey: '',
-  configChanged: false,
-  configErrors: null,
+  configErrors: null,  
     
   config: reads('model.config'),
-
     
   resetOnExit: function() {
-    this.set('newConfigKey', '');
     this.hideActionConfirmation();
     this.set('configErrors', null);
   },
     
-  @action
-  addNew() {
-    let key = this.newConfigKey;
-    let modelConfig = this.get('model.config');
-    if (modelConfig[key]) {
-      return;
-    }
-    modelConfig[key] = { key: key, lines: 3, value: '', new_value: '' };
-    this.set('config', modelConfig);
-    this.set('configChanged', !this.configChanged);
-  },
-        
-  @action
-  removeKey(key) {
-    let modelConfig = this.get('model.config');
-    delete modelConfig[key];
-    this.set('model.config', modelConfig);
-    this.set('configChanged', !this.configChanged);
-  },
-        
   @action
   restoreDefaults() {
     let api = this.gameApi;
@@ -55,6 +31,7 @@ export default Controller.extend(ConfirmAction, {
       this.send('reloadModel');
     });  
   },
+  
         
   @action
   save() {

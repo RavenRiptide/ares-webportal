@@ -65,13 +65,7 @@
  
     <div class="scene-pose-header">		
       <LinkTo @route="char" @model="{{message.author.name}}" target="_blank">
-          {{#if message.author.icon}}
-          <img alt="{{message.author.name}}'s icon" class="small-profile-icon <IconClass />" src="/game/uploads/{{message.author.icon}}" >
-          {{else}}
-          <img alt="{{message.author.name}}'s icon" class="small-profile-icon <IconClass />" src="/game/uploads/theme_images/noicon.png" >
-          {{/if}}
-          
-          {{message.author.name}} 
+        <CharIconInline @char={{message.author}} />
       </LinkTo>
       </div>
       
@@ -96,7 +90,7 @@
 
  <div class="scene-controls-box">
  {{#if this.canTalk}}
-   <MarkdownEditor @text={{this.channel.draftMessage}} class="chat-box" cols={{80}} rows="6" @onEnter={{this.sendMessage}} />
+   <MarkdownEditor @text={{this.channel.draftMessage}} class="chat-box" cols={{80}} rows="10" @onEnter={{this.sendMessage}} />
  {{/if}}
   <div class="scene-controls">
 

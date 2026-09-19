@@ -1,0 +1,8 @@
+{{page-title "Last Roll"}}
+<h1>Your Last Roll</h1>
+
+{{#if this.model.lines.length}}
+  <pre>{{pf2-join this.model.lines "\n"}}</pre>
+{{else}}
+  <p>You have made no roll in an encounter yet.</p>
+{{/if}}

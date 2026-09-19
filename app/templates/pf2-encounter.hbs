@@ -1,0 +1,49 @@
+{{page-title (concat "Encounter " this.model.id)}}
+<h1>Encounter {{this.model.id}}</h1>
+
+<p>
+  Round {{this.model.round}}{{#if this.model.current}} &middot; <b>{{this.model.current}}</b>'s turn{{/if}}
+  {{#unless this.model.active}} &middot; ended{{/unless}}
+  &middot; GM: {{this.model.organizer}}
+  {{#if this.model.trusted.length}} &middot; trusted: {{pf2-join this.model.trusted ", "}}{{/if}}
+  <button type="button" class="btn btn-secondary btn-sm" {{on "click" this.refresh}}>Refresh</button>
+</p>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Init</th>
+      <th>Name</th>
+      <th>Conditions and effects</th>
+      <th>Cover</th>
+      <th>HP</th>
+      <th>This turn</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each this.model.combatants as |one|}}
+      <tr class={{if (eq one.name this.model.current) "table-info"}}>
+        <td>#{{one.id}}</td>
+        <td>{{one.initiative}}</td>
+        <td>{{one.name}}</td>
+        <td>
+          {{pf2-join one.conditions ", "}}
+          {{#if one.effects.length}}<br><small>{{pf2-join one.effects ", "}}</small>{{/if}}
+        </td>
+        <td>{{one.cover}}{{#if one.concealment}} {{one.concealment}}{{/if}}</td>
+        <td>{{one.hp}}</td>
+        <td><small>{{one.turn}}</small></td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<h2>Log</h2>
+<ul class="list-unstyled">
+  {{#each this.model.log as |line|}}
+    <li class="pre-wrap">{{line}}</li>
+  {{/each}}
+</ul>
+
+<p><LinkTo @route="pf2-last-roll">Your last roll, modifier by modifier</LinkTo></p>

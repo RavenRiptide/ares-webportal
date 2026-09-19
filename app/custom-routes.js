@@ -7,4 +7,7 @@ router.route('pf2-feats-ancestry', { path: '/pf2/feats/ancestry' });
 router.route('pf2-feats-general', { path: '/pf2/feats/general' });
 router.route('pf2-feats-skill', { path: '/pf2/feats/skill' });
 router.route('pf2-feats-dedication', { path: '/pf2/feats/dedication' });
+router.route('pf2-encounter', { path: '/pf2/encounter/:id' });
+router.route('pf2-actions', { path: '/pf2/actions' });
+router.route('pf2-last-roll', { path: '/pf2/last-roll' });
 }

@@ -9,6 +9,8 @@
   <button type="button" class="btn btn-secondary btn-sm" {{on "click" this.refresh}}>Refresh</button>
 </p>
 
+<p><b>Difficulty:</b> {{this.model.difficulty}}</p>
+
 <table class="table table-striped">
   <thead>
     <tr>
@@ -38,6 +40,18 @@
     {{/each}}
   </tbody>
 </table>
+
+<h2>History</h2>
+{{#if this.model.history.length}}
+  <p><small>What the GM can take back with <code>+e/undo</code>, oldest first. What has been taken back is struck through, and <code>+e/redo</code> puts it back.</small></p>
+  <ol class="small">
+    {{#each this.model.history as |entry|}}
+      <li>{{#if entry.undone}}<s>{{entry.said}}</s>{{else}}{{entry.said}}{{/if}}</li>
+    {{/each}}
+  </ol>
+{{else}}
+  <p><small>Nothing has happened yet.</small></p>
+{{/if}}
 
 <h2>Log</h2>
 <ul class="list-unstyled">

@@ -26,7 +26,7 @@ Read from the code on 2026-10-10.
 - **Adding one.** `PF2EncounterAddCmd` (`plugins/pf2e/commands/encounter/encounter_creature.rb`) tries `Described.read` first and refuses a described creature unless `Gm.plotmaster?`. Otherwise it calls `Bestiary.find`, then `Gm.open?`.
 - **The instance.** `Pf2eNpc` (`plugins/pf2e/models/npcs.rb`) holds `creature` (a bestiary name) or `described` (a hash). `written_stat_block` is `Bestiary.entry(creature) || described`, with `Adjustments.apply` over it. A bestiary creature is therefore read live by name; only a described creature is the encounter's own copy.
 - **History.** `History.snapshot` (`plugins/pf2e/helpers/history.rb`) copies every `Pf2eNpc`'s attributes, `described` included, into the `before` and `after` of every entry.
-- **The bestiary.** 3,078 creatures, levels -1 to 25, no duplicate names across packs. Entry keys: `pack source level size rarity traits ac hp perception saves abilities speeds skills`, and optionally `senses immunities weaknesses resistances strikes actions spellcasting hp_details hardness shield`.
+- **The bestiary.** 2,994 creatures, levels -1 to 25, no duplicate names across packs. Entry keys: `pack source level size rarity traits ac hp perception saves abilities speeds skills`, and optionally `senses immunities weaknesses resistances strikes actions spellcasting hp_details hardness shield`.
   - Strike: `name bonus damage traits`, optional `effects range rules`. A damage instance is `[formula, type, category]`, category one of nil, `persistent`, `precision`, `splash`.
   - Action: `name type traits`, optional `cost text rules`. Type is `action` (cost 1-3), `reaction`, `free` or `passive`.
   - Spellcasting: `name tradition type dc attack spells`, with spells keyed by rank `'0'`..`'10'`, and optionally `slots` (castings per rank, for a spontaneous caster) and `uses` (castings per day of a named innate spell). A prepared spell is listed once for each time it is prepared. Types in use: innate, prepared, spontaneous, focus.
@@ -368,7 +368,7 @@ A `checked` block is what every request that shows a stat block returns:
 
 Notes on these:
 
-- `pf2Creatures` with scope `bestiary` reads only `Bestiary.index`, which holds name, pack, level and traits, and filters by `Gm.open?` as `+e/bestiary` does. Fifty a page, paged on the server: there are 3,078.
+- `pf2Creatures` with scope `bestiary` reads only `Bestiary.index`, which holds name, pack, level and traits, and filters by `Gm.open?` as `+e/bestiary` does. Fifty a page, paged on the server: there are 2,994.
 - `pf2CreatureSpells` searches `pf2e_spell_mechanics`, not `pf2e_spells` (668 player spells), because it is what `Acting.cast` resolves against. The editor also accepts a name that is in neither.
 - `pf2CreatureSave` rejects a stale `base_revision` so two tabs cannot silently overwrite each other.
 - The Elite and Weak preview is `Adjustments.apply` on the server through the `adjustment` argument. The portal does not reimplement it.

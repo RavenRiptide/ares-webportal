@@ -20,6 +20,7 @@
       <th>Conditions and effects</th>
       <th>Cover, concealment</th>
       <th>HP</th>
+      <th><abbr title="Hero Points held in this scene">Hero</abbr></th>
       <th>This turn</th>
     </tr>
   </thead>
@@ -35,6 +36,7 @@
         </td>
         <td>{{one.cover}}{{#if one.concealment}} {{one.concealment}}{{/if}}</td>
         <td>{{one.hp}}</td>
+        <td>{{one.hero_points}}</td>
         <td><small>{{one.turn}}</small></td>
       </tr>
     {{/each}}
@@ -46,7 +48,10 @@
   <p><small>What the GM can take back with <code>+e/undo</code>, oldest first. What has been taken back is struck through, and <code>+e/redo</code> puts it back.</small></p>
   <ol class="small">
     {{#each this.model.history as |entry|}}
-      <li>{{#if entry.undone}}<s>{{entry.said}}</s>{{else}}{{entry.said}}{{/if}}</li>
+      <li>
+        {{#if entry.undone}}<s>{{entry.said}}</s>{{else}}{{entry.said}}{{/if}}
+        {{#if entry.heroes.length}}<small>(Hero Point: {{pf2-join entry.heroes ", "}})</small>{{/if}}
+      </li>
     {{/each}}
   </ol>
 {{else}}

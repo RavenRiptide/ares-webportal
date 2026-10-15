@@ -1,0 +1,78 @@
+{{page-title "Creatures"}}
+<h1>Creatures</h1>
+
+<p>Your saved creatures, those shared with you, those admins have approved for everyone, and the bestiary. A creature is added to an encounter with <code>+e/add</code> and its name; <code>help creatures</code> has the commands that save and change one.</p>
+
+<ul class="nav nav-tabs mb-3">
+  {{#each this.model.scopes as |scope|}}
+    <li class="nav-item">
+      <LinkTo @route="pf2-creatures" @query={{hash scope=scope page=1}} class={{if (eq scope this.model.scope) "nav-link active" "nav-link"}}>{{get this.scopeNames scope}}</LinkTo>
+    </li>
+  {{/each}}
+</ul>
+
+<form class="row g-2 align-items-end mb-3" {{on "submit" this.search}}>
+  <div class="col-sm-5">
+    <label class="form-label" for="pf2-creature-words">Name contains</label>
+    <input id="pf2-creature-words" type="text" class="form-control" value={{this.words}} {{on "input" (fn this.typed "typedWords")}}>
+  </div>
+  <div class="col-auto">
+    <label class="form-label" for="pf2-creature-from">Level from</label>
+    <input id="pf2-creature-from" type="text" inputmode="numeric" class="form-control" value={{this.level_from}} {{on "input" (fn this.typed "typedFrom")}}>
+  </div>
+  <div class="col-auto">
+    <label class="form-label" for="pf2-creature-to">to</label>
+    <input id="pf2-creature-to" type="text" inputmode="numeric" class="form-control" value={{this.level_to}} {{on "input" (fn this.typed "typedTo")}}>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">Search</button>
+  </div>
+</form>
+
+{{#if this.onBestiary}}
+  {{#unless this.model.runs_own}}
+    <p class="alert alert-info">You may add creatures from Monster Core and Monster Core 2. The rest of the bestiary is here to build your own from: clone one with <code>creature/clone &lt;creature&gt;=&lt;new name&gt;</code>, and once an admin approves yours, anyone may add it.</p>
+  {{/unless}}
+{{/if}}
+
+{{#if this.model.creatures.length}}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Level</th>
+        <th>Traits</th>
+        {{#if this.onBestiary}}
+          <th>You may add it</th>
+        {{else}}
+          <th>Author</th>
+          <th>Status</th>
+        {{/if}}
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.model.creatures as |one|}}
+        <tr>
+          <td><LinkTo @route="pf2-creature" @model={{one.ref}}>{{one.name}}</LinkTo></td>
+          <td>{{one.level}}</td>
+          <td>{{pf2-join one.traits ", "}}</td>
+          {{#if this.onBestiary}}
+            <td>{{if one.addable "Yes" "No: to build from"}}</td>
+          {{else}}
+            <td>{{one.owner}}</td>
+            <td>{{one.status}}{{#if one.mine}}{{#unless (eq one.audience "private")}} &middot; shared{{/unless}}{{/if}}</td>
+          {{/if}}
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <p>
+    {{this.model.total}} in all.
+    {{#if this.hasPrevious}}<button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.turn -1)}}>Previous</button>{{/if}}
+    Page {{this.model.page}} of {{this.model.pages}}
+    {{#if this.hasNext}}<button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.turn 1)}}>Next</button>{{/if}}
+  </p>
+{{else}}
+  <p>None here. {{#if this.model.can_create}}Save one with <code>creature/save &lt;name&gt;=&lt;description&gt;</code>.{{/if}}</p>
+{{/if}}

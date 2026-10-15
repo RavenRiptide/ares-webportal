@@ -1,0 +1,48 @@
+{{page-title this.model.creature.name}}
+<h1>{{this.model.creature.name}}</h1>
+
+{{#if (eq this.model.creature.source "saved")}}
+  <p>
+    <code>c:{{this.model.creature.id}}</code> &middot; by {{this.model.creature.owner}} &middot; {{this.model.creature.status}}
+    &middot; revision {{this.model.creature.revision}}{{#if this.model.creature.can.edit}} of {{this.model.creature.latest}}{{/if}}
+    {{#if this.model.creature.published_revision}} &middot; published: revision {{this.model.creature.published_revision}}{{/if}}
+  </p>
+{{else}}
+  <p>From the bestiary.</p>
+{{/if}}
+
+{{#if this.model.addable}}
+  <p>Add it to an encounter you run: <code>{{this.model.add}}</code></p>
+{{else if (eq this.model.creature.source "bestiary")}}
+  <p class="alert alert-info">You may add creatures from Monster Core and Monster Core 2. This one is here to build your own from: <code>creature/clone {{this.model.creature.name}}=&lt;new name&gt;</code>.</p>
+{{else}}
+  <p class="alert alert-info">Not yet approved. Once an admin approves it, anyone may add it: <code>creature/submit c:{{this.model.creature.id}}</code>.</p>
+{{/if}}
+
+{{#if this.model.review_note}}
+  <p class="alert alert-warning"><b>Sent back:</b> {{this.model.review_note}}</p>
+{{/if}}
+
+<div class="card mb-3">
+  <div class="card-body">
+    {{#each this.model.lines as |line|}}
+      <div class="pre-wrap">{{line}}</div>
+    {{/each}}
+  </div>
+</div>
+
+{{#if this.model.notes}}
+  <h2>Notes</h2>
+  <p class="pre-wrap">{{this.model.notes}}</p>
+{{/if}}
+
+{{#if this.model.history.length}}
+  <h2>History</h2>
+  <ol class="small">
+    {{#each this.model.history as |one|}}
+      <li>{{one.at}} &middot; {{one.by}} &middot; {{one.kind}}{{#if one.revision}} revision {{one.revision}}{{/if}}{{#if one.summary}}: {{one.summary}}{{/if}}</li>
+    {{/each}}
+  </ol>
+{{/if}}
+
+<p><LinkTo @route="pf2-creatures">All creatures</LinkTo></p>

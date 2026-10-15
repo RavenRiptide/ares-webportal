@@ -15,8 +15,8 @@
   <p>Add it to an encounter you run: <code>{{this.model.add}}</code></p>
 {{else if (eq this.model.creature.source "bestiary")}}
   <p class="alert alert-info">You may add creatures from Monster Core and Monster Core 2. This one is here to build your own from: <code>creature/clone {{this.model.creature.name}}=&lt;new name&gt;</code>.</p>
-{{else}}
-  <p class="alert alert-info">Not yet approved. Once an admin approves it, anyone may add it: <code>creature/submit c:{{this.model.creature.id}}</code>.</p>
+{{else if (eq this.model.creature.status "draft")}}
+  <p class="alert alert-info">Not yet approved. Once an admin approves it, anyone may add it.</p>
 {{/if}}
 
 {{#if this.model.review_note}}
@@ -30,6 +30,43 @@
     {{/each}}
   </div>
 </div>
+
+{{#if this.creature.can.submit}}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="h5">Approval</h2>
+      {{#if this.submitted}}
+        <p>Awaiting an admin's approval.</p>
+        <button type="button" class="btn btn-secondary btn-sm" {{on "click" this.withdraw}}>Withdraw the request</button>
+      {{else if this.retired}}
+        <p>Retired: off the lists, and not to be added.</p>
+      {{else}}
+        <p>Once an admin approves it, anyone may add it, as it stands then. What you change after waits for the next approval.</p>
+        <label class="form-label" for="pf2-cr-note">A note for the admins</label>
+        <input id="pf2-cr-note" type="text" class="form-control mb-2" value={{this.note}} {{on "input" (fn this.typed "note")}}>
+        <button type="button" class="btn btn-primary btn-sm" {{on "click" this.submit}}>Submit for approval</button>
+      {{/if}}
+    </div>
+  </div>
+{{/if}}
+
+{{#if this.creature.can.share}}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="h5">Sharing</h2>
+      <p>Plotmasters and admins it is shared with add it as it stands, without approval.</p>
+      <form {{on "submit" this.share}}>
+        <div class="form-check mb-2">
+          <input id="pf2-cr-pms" type="checkbox" class="form-check-input" checked={{this.sharedWithPlotmasters}} {{on "change" this.toggle}}>
+          <label class="form-check-label" for="pf2-cr-pms">Every Plotmaster</label>
+        </div>
+        <label class="form-label" for="pf2-cr-with">And these, by name, separated by commas</label>
+        <input id="pf2-cr-with" type="text" class="form-control mb-2" value={{this.shareText}} {{on "input" (fn this.typed "shareNames")}}>
+        <button type="submit" class="btn btn-secondary btn-sm">Share</button>
+      </form>
+    </div>
+  </div>
+{{/if}}
 
 {{#if this.model.notes}}
   <h2>Notes</h2>
@@ -47,6 +84,7 @@
 
 <p>
   {{#if this.model.creature.can.edit}}<LinkTo @route="pf2-creature-edit" @model={{this.model.creature.ref}} class="btn btn-primary btn-sm">Edit</LinkTo>{{/if}}
+  {{#if this.model.creature.can.retire}}<button type="button" class="btn btn-secondary btn-sm" {{on "click" this.retire}}>{{if this.retired "Restore" "Retire"}}</button>{{/if}}
   {{#if this.model.creature.can.clone}}<LinkTo @route="pf2-creature-new" @query={{hash from=this.model.creature.ref}} class="btn btn-secondary btn-sm">Make a copy to change</LinkTo>{{/if}}
   <LinkTo @route="pf2-creatures">All creatures</LinkTo>
 </p>

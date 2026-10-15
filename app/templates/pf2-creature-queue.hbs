@@ -1,0 +1,39 @@
+{{page-title "Creatures awaiting approval"}}
+<h1>Creatures awaiting approval</h1>
+
+<p>Approving a creature publishes the revision submitted, for anyone to add. Sending one back needs a reason, which its author reads on it.</p>
+
+{{#each this.model.submissions as |one|}}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="h5"><LinkTo @route="pf2-creature" @model={{one.creature.ref}}>{{one.creature.name}}</LinkTo>, level {{one.creature.level}}, by {{one.creature.owner}}</h2>
+      <p>Revision {{one.revision}}{{#if one.note}}: "{{one.note}}"{{/if}}</p>
+      <p><b>What changed since it was last published:</b> {{one.changes}}</p>
+
+      {{#if one.errors.length}}
+        <div class="alert alert-danger">{{#each one.errors as |found|}}<div>{{found.message}}</div>{{/each}}</div>
+      {{/if}}
+      {{#if one.warnings.length}}
+        <div class="alert alert-warning">{{#each one.warnings as |found|}}<div>{{found.message}}</div>{{/each}}</div>
+      {{/if}}
+
+      <div class="row">
+        <div class="col-lg-7">
+          {{#each one.lines as |line|}}<div class="pre-wrap">{{line}}</div>{{/each}}
+        </div>
+        <div class="col-lg-5 small">
+          {{#each one.mechanised as |runs|}}<div><b>{{runs.part}}</b>: {{runs.says}}</div>{{/each}}
+        </div>
+      </div>
+
+      <label class="form-label mt-3" for="pf2-q-note-{{one.creature.id}}">A note to its author</label>
+      <input id="pf2-q-note-{{one.creature.id}}" type="text" class="form-control mb-2" {{on "input" (fn this.typed one.creature.id)}}>
+      <button type="button" class="btn btn-primary btn-sm" {{on "click" (fn this.decide one.creature.id "approve")}}>Approve revision {{one.revision}}</button>
+      <button type="button" class="btn btn-danger btn-sm" {{on "click" (fn this.decide one.creature.id "reject")}}>Send back</button>
+    </div>
+  </div>
+{{else}}
+  <p>No creature awaits approval.</p>
+{{/each}}
+
+<p><LinkTo @route="pf2-creatures">All creatures</LinkTo></p>

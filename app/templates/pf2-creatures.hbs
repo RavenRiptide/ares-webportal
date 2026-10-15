@@ -3,9 +3,10 @@
 
 <p>Your saved creatures, those shared with you, those admins have approved for everyone, and the bestiary. A creature is added to an encounter with <code>+e/add</code> and its name; <code>help creatures</code> has the commands that save and change one.</p>
 
-{{#if this.model.can_create}}
-  <p><LinkTo @route="pf2-creature-new" class="btn btn-primary">New creature</LinkTo></p>
-{{/if}}
+<p>
+  {{#if this.model.can_create}}<LinkTo @route="pf2-creature-new" class="btn btn-primary">New creature</LinkTo>{{/if}}
+  {{#if this.model.admin}}<LinkTo @route="pf2-creature-queue" class="btn btn-secondary">Awaiting approval ({{this.model.waiting}})</LinkTo>{{/if}}
+</p>
 
 <ul class="nav nav-tabs mb-3">
   {{#each this.model.scopes as |scope|}}

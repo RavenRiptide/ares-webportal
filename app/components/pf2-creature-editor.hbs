@@ -76,9 +76,9 @@
         <input id="pf2-ed-weak" type="text" class="form-control" value={{this.weaknessesText}} {{on "change" (fn this.setResisted "weaknesses")}}>
       </div>
       <div class="mb-2">
-        <label class="form-label" for="pf2-ed-res">Resistances: <code>physical 5, cold 10</code></label>
+        <label class="form-label" for="pf2-ed-res">Resistances: <code>cold 10, physical 5 (except silver or cold iron)</code></label>
         <input id="pf2-ed-res" type="text" class="form-control" value={{this.resistancesText}} {{on "change" (fn this.setResisted "resistances")}}>
-        <small>A resistance's exceptions are kept as they were; change them with <code>creature/set</code>.</small>
+        <small>In brackets after a value: <code>except</code> what it does not resist, and <code>double</code> what it resists twice as much, each joined by <code>or</code> and the two by a semicolon.</small>
       </div>
     {{/if}}
 
@@ -116,7 +116,7 @@
               <input id="pf2-ed-sb-{{row.index}}" type="text" inputmode="numeric" class="form-control" value={{row.strike.bonus}} {{on "input" (fn this.setRow "strikes" row.index "bonus" "number")}}>
             </div>
             <div class="col-sm-5">
-              <label class="form-label" for="pf2-ed-sd-{{row.index}}">Damage: <code>2d8+5 piercing</code></label>
+              <label class="form-label" for="pf2-ed-sd-{{row.index}}">Damage: <code>2d8+5 piercing plus 1d6 persistent fire</code></label>
               <input id="pf2-ed-sd-{{row.index}}" type="text" class="form-control" value={{row.damageText}} {{on "change" (fn this.setDamage row.index)}}>
             </div>
             <div class="col-sm-6">

@@ -2,6 +2,14 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
+import {
+  damage,
+  damageText,
+  resisted,
+  resistedText,
+  valued,
+  valuedText,
+} from '../utils/pf2-stat-words';
 
 // The creature editor: a stat block built part by part, checked by the game as it changes, and saved as
 // a new creature or a new revision of one. `@start` is `{ id, name, block, notes, revision, cloned_from }`.
@@ -72,28 +80,6 @@ export default class Pf2CreatureEditor extends Component {
       .filter((one) => one.length);
   }
 
-  // Each key with its value: `fire 5, cold iron 3` as `{ fire: 5, 'cold-iron': 3 }`.
-  valued(value) {
-    let out = {};
-    this.list(value).forEach((one) => {
-      let found = one.match(/^(.+?)\s+([+-]?\d+)$/);
-      if (found)
-        out[found[1].trim().toLowerCase().replace(/\s+/g, '-')] = Number(
-          found[2],
-        );
-    });
-    return out;
-  }
-
-  words(held) {
-    return Object.entries(held || {})
-      .map(
-        ([key, value]) =>
-          `${key.replace(/-/g, ' ')} ${typeof value === 'object' ? value.value : value}`,
-      )
-      .join(', ');
-  }
-
   get traitsText() {
     return (this.block.traits || []).join(', ');
   }
@@ -107,19 +93,19 @@ export default class Pf2CreatureEditor extends Component {
   }
 
   get skillsText() {
-    return this.words(this.block.skills);
+    return valuedText(this.block.skills);
   }
 
   get weaknessesText() {
-    return this.words(this.block.weaknesses);
+    return resistedText(this.block.weaknesses);
   }
 
   get resistancesText() {
-    return this.words(this.block.resistances);
+    return resistedText(this.block.resistances);
   }
 
   get speedText() {
-    return this.words(this.block.speeds);
+    return valuedText(this.block.speeds);
   }
 
   get errors() {
@@ -163,22 +149,15 @@ export default class Pf2CreatureEditor extends Component {
         : kind === 'list'
           ? this.list(raw)
           : kind === 'valued'
-            ? this.valued(raw)
+            ? valued(raw, this.block[path], path === 'skills' ? 'skill' : 'key')
             : raw;
     this.block = this.placed(path.split('.'), value);
     this.checkSoon();
   }
 
-  // Resistances keep any `except` a stat block gave them where the type and value are unchanged.
   @action
   setResisted(field, event) {
-    let read = this.valued(event.target.value);
-    let before = this.block[field] || {};
-    Object.keys(read).forEach((type) => {
-      if (typeof before[type] === 'object' && before[type].value === read[type])
-        read[type] = before[type];
-    });
-    this.block = this.placed([field], read);
+    this.block = this.placed([field], resisted(event.target.value));
     this.checkSoon();
   }
 
@@ -200,38 +179,19 @@ export default class Pf2CreatureEditor extends Component {
     this.checkSoon();
   }
 
-  // A Strike's damage, written as `2d8+5 piercing plus 1d6 persistent fire`.
   @action
   setDamage(index, event) {
     let rows = this.rows('strikes');
-    rows[index].damage = event.target.value
-      .split(/\s+plus\s+/i)
-      .map((one) => one.trim().match(/^(\S+)\s+(persistent\s+)?(.+)$/i))
-      .filter((found) => found)
-      .map((found) => [
-        found[1],
-        found[3].trim().toLowerCase(),
-        found[2] ? 'persistent' : null,
-      ]);
+    rows[index].damage = damage(event.target.value);
     this.block = this.placed(['strikes'], rows);
     this.checkSoon();
-  }
-
-  damageText(strike) {
-    return (strike.damage || [])
-      .map(([formula, type, category]) =>
-        [formula, category === 'persistent' ? 'persistent' : null, type]
-          .filter((one) => one)
-          .join(' '),
-      )
-      .join(' plus ');
   }
 
   get strikes() {
     return (this.block.strikes || []).map((strike, index) => ({
       index,
       strike,
-      damageText: this.damageText(strike),
+      damageText: damageText(strike.damage),
       traitsText: (strike.traits || []).join(', '),
       effectsText: (strike.effects || []).join(', '),
       runs: this.mechanised.filter(

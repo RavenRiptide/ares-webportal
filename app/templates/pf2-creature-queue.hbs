@@ -23,6 +23,7 @@
         </div>
         <div class="col-lg-5 small">
           {{#each one.mechanised as |runs|}}<div><b>{{runs.part}}</b>: {{runs.says}}</div>{{/each}}
+          <div class="mt-2"><b>For its level:</b> {{#each one.bands as |band|}}{{band.figure}} {{band.value}} {{band.band}}; {{/each}}</div>
         </div>
       </div>
 

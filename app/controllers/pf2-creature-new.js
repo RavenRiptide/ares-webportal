@@ -32,26 +32,17 @@ export default class Pf2CreatureNewController extends Controller {
   @action
   async look(event) {
     event.preventDefault();
-    let bestiary = await this.gameApi.requestOne(
-      'pf2Creatures',
-      { scope: 'bestiary', words: this.search },
-      null,
+    // Their own first, then the published, then the bestiary's.
+    let lists = await Promise.all(
+      ['mine', 'published', 'bestiary'].map((scope) =>
+        this.gameApi.requestOne(
+          'pf2Creatures',
+          { scope, words: this.search },
+          null,
+        ),
+      ),
     );
-    let saved = await this.gameApi.requestOne(
-      'pf2Creatures',
-      { scope: 'published', words: this.search },
-      null,
-    );
-    let mine = await this.gameApi.requestOne(
-      'pf2Creatures',
-      { scope: 'mine', words: this.search },
-      null,
-    );
-    this.found = [
-      ...(mine.creatures || []),
-      ...(saved.creatures || []),
-      ...(bestiary.creatures || []),
-    ].slice(0, 12);
+    this.found = lists.flatMap((one) => one.creatures || []).slice(0, 12);
   }
 
   @action

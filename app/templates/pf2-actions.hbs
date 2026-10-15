@@ -1,0 +1,38 @@
+{{page-title "Your Actions"}}
+<h1>Your Actions</h1>
+
+<p>
+  Use one in an encounter with <code>+e/act &lt;action&gt;=&lt;target&gt;</code>. An action that rolls a
+  check rolls it against the target's defence; one with an effect puts you under it.
+</p>
+
+{{#each-in this.model.modes as |mode actions|}}
+  <h2 class="text-capitalize">{{mode}}</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Action</th>
+        <th>Cost</th>
+        <th>Rolls</th>
+        <th>Against</th>
+        <th>Puts you under</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each actions as |one|}}
+        <tr>
+          <td>
+            <details>
+              <summary>{{one.name}}</summary>
+              <small class="pre-wrap">{{one.description}}</small>
+            </details>
+          </td>
+          <td>{{one.cost}}</td>
+          <td>{{one.rolls}}</td>
+          <td>{{one.against}}</td>
+          <td>{{one.effect}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+{{/each-in}}

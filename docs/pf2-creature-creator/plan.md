@@ -1,6 +1,6 @@
 # Custom Creatures
 
-**Status: proposed** on 2026-10-10. Nothing here is built. Server work would go on `feat/derived-stats` in `aresmush`, pages on `feat/pf2-encounter-pages` in `ares-webportal`.
+**Status: answered** on 2026-10-14; phase 1 under way. Proposed 2026-10-10. Raven's answers to the open questions are in §8 and are folded into the sections below. Server work would go on `feat/derived-stats` in `aresmush`, pages on `feat/pf2-encounter-pages` in `ares-webportal`.
 
 Asked for: help staff build out custom creatures, with an access layer deciding who gets to use them, and probably a web-based creature creator.
 
@@ -52,9 +52,12 @@ Read from the code on 2026-10-10.
 |---|---|---|
 | Where a saved stat block lives | Immutable revisions, pinned by the encounter's `Pf2eNpc` | Edits and deletion cannot reach an encounter; history snapshots stay small; "approve exactly this" and "who changed what" come free |
 | How names resolve | Exact bestiary name wins; `c:<name or id>` forces a saved creature; a saved creature may not take a bestiary name | Every existing `+e/add goblin warrior` keeps its meaning |
-| Who authors | Plotmasters and staff | They are who may add a creature of their own making today |
-| Who uses | Owner's audience among Plotmasters, plus staff approval of one revision for `plotmasters` or `everyone` | Sharing never widens a GM kind; only staff approval does |
-| New permission | One: `manage_creatures` | Lets a non-admin bestiary keeper approve; everything else reuses `kill_pc` |
+| Who authors | Any approved character | Raven, answer 3 |
+| Who uses | A Plotmaster or staff uses their own creatures, and those another Plotmaster or staff member shares with them, without approval. Anyone else uses only a creature an admin has approved, which is then published for everyone | Raven, answers 1, 3 and 5; sharing never widens a GM kind, only approval does |
+| Who approves | Admins. No new permission | Raven, answer 4 |
+| A limit per author | None | Raven, answer 9 |
+| Trait names | The setting's: the ancestry and heritage traits in `pf2e_ancestry.yml` and `pf2e_heritages.yml` are accepted beside the bestiary's | Raven, answer 10 |
+| A house bestiary file | Yes: an approved creature is also written to `game/bestiary/house.yml`, kept in git | Raven, answer 11 |
 | Can an invalid creature be saved | No. A revision is written only with zero errors | Everything in the database is safe to fight with |
 | Where benchmarks live | `game/config/pf2e_creature_benchmarks.yml`, transcribed from Archives of Nethys | Small table, read whole like `pf2e_rewards.yml` |
 | Where validation runs | One pure server validator; the web calls it | Command line and web cannot disagree |
@@ -82,7 +85,6 @@ class Pf2eCreature < Ohm::Model
 
   reference :head, "AresMUSH::Pf2eCreatureRevision"        # the latest
   reference :published, "AresMUSH::Pf2eCreatureRevision"   # the one staff approved, if any
-  attribute :open_to                        # plotmasters | everyone, set at approval
   reference :submitted, "AresMUSH::Pf2eCreatureRevision"   # awaiting review, if any
   attribute :submitted_for                  # what the author asked for
   attribute :job_id
@@ -197,22 +199,24 @@ Which revision a ref carries: the owner and staff get the head. Anyone else gets
 
 ### Who may do what
 
-`Pf2e::CreatureAccess` (`helpers/creature_access.rb`) is pure: `may(actor, action, row)` answers `Ok` or `Err` with a code. The actor is a plain hash built by `CreatureAccess.actor(char)`: `{ 'id', 'kind' => Gm.kind(char), 'manager' => char.has_permission?('manage_creatures'), 'approved' => char.is_approved? }`. The row is `Creatures.row(creature)`. `ACTIONS` is a table, one row per action.
+`Pf2e::CreatureAccess` (`helpers/creature_access.rb`) is pure: `may(actor, action, row)` answers `Ok` or `Err` with a code. The actor is a plain hash built by `CreatureAccess.actor(char)`: `{ 'id', 'kind' => Gm.kind(char), 'approved' => char.is_approved? }`. The row is `Creatures.row(creature)`. `ACTIONS` is a table, one row per action.
 
-| Action | Owner | Plotmaster it reaches | Other Plotmaster | Event runner | Staff or `manage_creatures` |
-|---|---|---|---|---|---|
-| create | if a Plotmaster | | | no | yes |
-| view (block and notes) | yes | yes | no | only if published for everyone | yes |
-| use (`+e/add`) | if still a Plotmaster | yes | no | only if published for everyone | yes |
-| clone | yes | yes | no | no | yes |
-| edit, rename, notes | yes | no | no | no | yes |
-| set audience, share | yes | no | no | no | yes |
-| submit, withdraw | yes | no | no | no | yes |
-| approve, reject, unpublish | no | no | no | no | yes |
-| retire, restore | yes, unless published for everyone | no | no | no | yes |
-| purge, hand to a new owner | no | no | no | no | yes |
+"Published" is an approved revision: approval publishes it for everyone (Raven, answers 1 and 2). "It reaches" a Plotmaster or staff member when they are named in its shares or it is shared with all Plotmasters.
 
-"It reaches" a Plotmaster when the audience is `plotmasters`, or `shared` and they are named, or it is published at all.
+| Action | Its owner | A Plotmaster or staff member it reaches | Anyone else | An admin |
+|---|---|---|---|---|
+| create | any approved character | | | yes |
+| view (block and notes) | yes | yes | only if published | yes |
+| use (`+e/add`) | if a Plotmaster or staff; anyone else only once published | yes, while they are a Plotmaster or staff | only if published | yes |
+| clone | yes | yes | only if published | yes |
+| edit, rename, notes | yes | no | no | yes |
+| share | yes, and only with Plotmasters and staff | no | no | yes |
+| submit, withdraw | yes | no | no | yes |
+| approve, reject, unpublish | no | no | no | yes |
+| retire, restore | yes, unless published | no | no | yes |
+| purge, hand to a new owner | no | no | no | yes |
+
+An owner who stops being a Plotmaster keeps their creatures and may edit them, but adds one to an encounter only once it is published (Raven, answer 8).
 
 ### The options, weighed
 
@@ -220,7 +224,7 @@ Which revision a ref carries: the owner and staff get the head. Anyone else gets
 - **Shared with named characters.** Kept, with one rule: a share only works for someone who is a Plotmaster when they use it, checked at use. Naming an event runner is refused (`:share_needs_plotmaster`). A share is a courtesy between people who could each have typed the creature themselves; it gives nobody a power they lacked.
 - **Shared with all Plotmasters.** Kept, with no staff approval, for the same reason.
 - **Staff-approved, usable by everyone.** This is the controlled way to widen what event runners run beyond Monster Core. It is the only path by which an event runner touches a custom creature, and it is always one specific revision.
-- **Plotmaster only.** Not a separate flag: it is approval with `open_to: plotmasters`, or simply not publishing. Approval for `plotmasters` exists so staff can mark a creature as vetted for the game's setting without opening it to everyone.
+- **Plotmaster only.** Not a separate flag: a Plotmaster's creature that is not published is theirs and their shares' alone.
 
 Rejected: letting sharing reach event runners. That would let any Plotmaster decide what every player may run, which is the decision the game owner reserved to staff by listing bestiaries in `pf2e.event_runner_bestiaries`.
 
@@ -233,21 +237,20 @@ Rejected: letting sharing reach event runners. That would let any Plotmaster dec
 
 ### Permissions
 
-- `kill_pc`: unchanged. Authoring asks `Gm.plotmaster?`.
-- `manage_creatures`: new, declared under `pf2e.permissions` in `game/config/pf2e_options.yml`, which is where `plugins/roles/helpers.rb:43` reads the list from. Holders approve, reject, unpublish, edit or retire anyone's creature, see every creature, and purge. Admins have it without being given it.
+- `kill_pc`: unchanged. Using an unpublished creature asks `Gm.plotmaster?`.
+- No new permission. Admins approve, reject, unpublish, edit or retire anyone's creature, see every creature, and purge (Raven, answer 4). Unpublish and retire are also the staff override for a player whose last will asks for their creatures to go (answer 8).
 - `trusted_gm`: not involved.
-- If the owner wants ordinary players to author creatures for staff to approve (open question 3), add `build_creatures` and make "create" read `plotmaster? || has_permission?('build_creatures')`. An author who is not a Plotmaster may then edit and submit but not use.
 
 ### Audit
 
 - Every stat block change is a `Pf2eCreatureRevision` with who, when and a generated summary.
-- Every other change is a `Pf2eCreatureEvent`: audience, shares, submission, approval with `open_to` and the revision number, rejection with its reason, retirement, a change of owner.
+- Every other change is a `Pf2eCreatureEvent`: audience, shares, submission, approval with the revision number, rejection with its reason, retirement, a change of owner.
 - Approvals and rejections are also written with `Global.logger.info`, and to the job if one is open (section 4, the queue).
 - `creature/history <name>` and the view page show both lists to the owner and staff.
 
 ### When an owner goes
 
-`Character#delete_pf2` (`plugins/pf2e/models/character_mods.rb`) gains a call: a deleted owner's published creatures stay, with `owner` cleared and `owner_name` kept, for staff to hand on; the rest are retired. A character who loses `kill_pc` keeps their creatures and may edit them, but `use` fails until they are a Plotmaster again or the creature is published for everyone.
+The game does not delete approved characters (Raven, answer 8), so this is for the rare deletion staff make. `Character#delete_pf2` (`plugins/pf2e/models/character_mods.rb`) gains a call: a deleted owner's published creatures stay, with `owner` cleared and `owner_name` kept, for staff to hand on; the rest are retired. A character who loses `kill_pc` keeps their creatures and may edit them, but `use` fails until they are a Plotmaster again or the creature is published.
 
 ## 3. Commands
 
@@ -267,14 +270,14 @@ Each handler is a shell: parse, build the actor and the row, call a pure core, w
 | `creature/rename <name>=<new name>` | | `CreatureCheck.name` |
 | `creature/describe <name>` | prints the line that recreates it | `Described.write` |
 | `creature/check <name>` | errors, warnings, and where each figure sits for its level (phase 4) | `CreatureCheck`, `CreatureBenchmarks` |
-| `creature/share <name>=<character>[,...]\|plotmasters\|private` | sets the audience | `CreatureAccess`, `CreatureSharing` |
+| `creature/share <name>=<character>[,...]\|plotmasters\|private` | sets the audience; only Plotmasters and staff are named | `CreatureAccess`, `CreatureSharing` |
 | `creature/unshare <name>=<character>` | | same |
 | `creature/history <name>` | revisions and events | |
 | `creature/retire <name>`, `creature/restore <name>` | | `CreatureAccess` |
-| `creature/submit <name>[=everyone\|plotmasters][/<note>]` | asks staff to approve the head (phase 5) | `CreatureReview.submit` |
+| `creature/submit <name>[=<note>]` | asks an admin to approve the head | `CreatureReview.submit` |
 | `creature/withdraw <name>` | | `CreatureReview.withdraw` |
 | `creature/queue` | staff: what awaits review | |
-| `creature/approve <creature>[=everyone\|plotmasters]` | staff | `CreatureReview.approve` |
+| `creature/approve <creature>` | admins: publishes the submitted revision for everyone | `CreatureReview.approve` |
 | `creature/reject <creature>=<reason>` | staff | `CreatureReview.reject` |
 | `creature/unpublish <creature>`, `creature/purge <creature>`, `creature/owner <creature>=<character>` | staff | |
 
@@ -335,7 +338,7 @@ A `ref` is `'saved:12'` or `'bestiary:Goblin Warrior'`. A `summary` is:
 
 ```
 { ref, source, id, name, level, size, rarity, traits: [],
-  owner, audience, status, open_to, revision, published_revision, updated,
+  owner, audience, status, revision, published_revision, updated,
   can: { view, use, edit, clone } }
 ```
 
@@ -362,9 +365,9 @@ A `checked` block is what every request that shows a stat block returns:
 | `pf2CreatureSave` | `{ id?, base_revision?, name, block, notes, tags, cloned_from? }` | `{ id, revision, findings }`, or `{ error, findings }` with errors, or `{ error, head }` when `base_revision` is no longer the head | 3 |
 | `pf2CreatureShare` | `{ id, audience, shared_with: [names] }` | `{ summary }` | 3 |
 | `pf2CreatureRetire` | `{ id, retire: true\|false }` | `{ summary }` | 3 |
-| `pf2CreatureSubmit` | `{ id, open_to, note }`, or `{ id, withdraw: true }` | `{ summary, job_id }` | 5 |
+| `pf2CreatureSubmit` | `{ id, note }`, or `{ id, withdraw: true }` | `{ summary, job_id }` | 5 |
 | `pf2CreatureQueue` | `{}` | `{ submissions: [ { summary, revision, submitted_at, asked_for, note, job_id, errors, warnings, changes: [ { path, was, now } ] } ] }` | 5 |
-| `pf2CreatureReview` | `{ id, revision, decision: "approve"\|"reject"\|"unpublish", open_to?, note }` | `{ summary }` | 5 |
+| `pf2CreatureReview` | `{ id, revision, decision: "approve"\|"reject"\|"unpublish", note }` | `{ summary }` | 5 |
 
 Notes on these:
 
@@ -398,8 +401,10 @@ A small service, `pf2-creature-options`, fetches `pf2CreatureOptions` once and h
 - **Scope tabs:** Mine, Shared with me, Published, Bestiary, and All for staff. Kept in the URL as a query param, with the filters, so a filtered list can be linked.
 - **Filters:** name contains; level from and to; trait (a `PowerSelect` over the options); status (Mine and All only).
 - **Table:** name, level, size, traits, owner, a status and audience badge, revision, updated. Row actions from `can`: View, Edit, Clone.
-- **Buttons:** New creature when `can_create`, with `used of max` beside it.
-- **Empty states:** an event runner sees Published and Bestiary only, with a line saying what a Plotmaster is.
+- **Buttons:** New creature when `can_create`.
+- **Empty states:** an event runner sees Mine, Published and Bestiary, with a line saying that their own creatures are added to an encounter once an admin approves them.
+- **The Bestiary tab** says that most of what it lists is there to build from: an event runner adds only Monster Core and Monster Core 2 creatures (`pf2e.event_runner_bestiaries`), and each row they may not add says so (Raven, 2026-10-14).
+- **The site's own design.** The pages sit inside the portal's layout, with its header and navigation, styled from `game/styles` in `aresmush`; the mock-ups' banner is not built. Raven adds the link to the library in a menu in `website.yml` once the route exists.
 - **Requests:** `pf2Creatures`, `pf2CreatureOptions`.
 
 ### Page: a creature (`pf2-creature`, `pf2-bestiary-creature`)
@@ -462,7 +467,7 @@ Each calls `pf2CreatureStart` and loads the block it answers. `?from=`, `?level=
 
 - Each submission: name, level, author, revision, when, what was asked for, the author's note, counts of warnings, a link to its job.
 - Expanding one shows the stat block with bands, every finding, and what changed since the published revision (`changes`).
-- Controls: open to (plotmasters or everyone), a note, Approve, Reject. Reject requires the note. Both ask first.
+- Controls: a note, Approve, Reject. Reject requires the note. Both ask first.
 - **Requests:** `pf2CreatureQueue`, `pf2CreatureReview`.
 
 On submit the server also opens a job with `Jobs.create_job` in the category named by `pf2e.creature_approval_category` (default the game's request category, `REQ`), holding the stat block lines and findings; on a decision it comments and closes it with `Jobs.close_job`. Staff already work in jobs, and a job gives the conversation with the author and its notifications without building either. The queue page and `submitted_id` remain the record; a blank category opens no job.
@@ -563,11 +568,13 @@ Inside the table a band is a note. Above the top column or below the bottom one 
 
 Each phase is usable when it lands. Sizes are rough working days for one developer who knows the code. The db suite is slow; run single files with `bundle exec rspec --pattern '<file>'`.
 
-### Phase 1: saved creatures, the command line, access. About 6 days
+### Phase 1: saved creatures, the command line, access and approval. About 8 days
 
-Builds: the three models; `Pf2eNpc`'s `revision`; `Creatures`, `CreatureAccess`, `CreatureCheck` (errors only, vocabulary warnings waiting for phase 3), `CreatureDraft`, `CreatureStore`, `Described.write`; `Gm.may_add?`; `add_npc`'s `revision:`; the `creature` commands except submit, withdraw, queue, approve, reject and check; the three `+e` commands through the resolver; the `manage_creatures` permission and `creature_limit` in `pf2e_options.yml`; `help/en/pf2e_creatures.md` and a paragraph in `pf2e_combat.md`; the owner-deleted hook.
+Builds: the three models; `Pf2eNpc`'s `revision`; `Creatures`, `CreatureAccess`, `CreatureCheck` (errors only, vocabulary warnings waiting for phase 3), `CreatureDraft`, `CreatureStore`, `CreatureReview`, `Described.write`; `Gm.may_add?`; `add_npc`'s `revision:`; the `creature` commands, approval among them, but for `check`; the house bestiary file written on approval; the three `+e` commands through the resolver; `help/en/pf2e_creatures.md` and a paragraph in `pf2e_combat.md`; the owner-deleted hook.
 
-Usable as: a Plotmaster saves a creature once, builds it up a part at a time, shares it with another Plotmaster, and adds it by name.
+Approval moves here from phase 5: a player's creature is no use to them until an admin approves it (Raven, answer 3). Phase 5 keeps the web queue and the job.
+
+Usable as: anyone saves a creature and builds it up a part at a time; a Plotmaster shares it with another and adds it by name; a player submits theirs and adds it once an admin approves it.
 
 Specs:
 
@@ -631,21 +638,21 @@ Specs:
 
 This phase depends on open question 1. If the answer is that event runners never use custom creatures, it shrinks to approval for Plotmasters as a mark of quality, or is dropped.
 
-## 8. Open questions
+## 8. Questions, and Raven's answers (2026-10-14)
 
-For RavenRiptide, as policy:
+1. **May event runners ever use a custom creature?** Yes, but only approved and published ones.
+2. **May players read a published creature's stat block?** Yes, published ones only.
+3. **Who may author?** Anyone. Plotmasters and admins need no approval for their own creatures; anyone else's needs an admin's approval before it is used.
+4. **Who approves?** Admins. Plotmasters are not asked to do administration.
+5. **Is sharing between Plotmasters free of staff review?** Yes: a Plotmaster may run another Plotmaster's unapproved creature shared with them, and an admin's, and an admin a Plotmaster's.
+6. **A ceiling on what event runners get?** No; approval is the only control.
+7. **Should "above extreme" block anything?** No: it is flagged to the author and to admins in the queue, and admins judge.
+8. **When an author stops being a Plotmaster?** Approved characters are not deleted. Someone who stops being a Plotmaster keeps their stat blocks and may edit them, but submits them for approval to add one to an encounter. Staff can unpublish, for a player whose last will asks for their creatures to go.
+9. **A limit per author?** None for now.
+10. **Setting names?** The setting's where possible: the ancestry and heritage traits in the game's YAML. Raven can give the Golarion equivalents; not every Golarion ancestry is in Ea.
+11. **A house bestiary file in git?** Yes.
 
-1. **May event runners ever use an approved custom creature?** The plan assumes yes, only a revision staff approved for everyone. If no, phase 5 changes as said above.
-2. **May players read a published creature's stat block?** Today any player outside an encounter can read any bestiary stat block with `+e/creature <name>`; only inside someone else's running encounter is it refused. A creature published for everyone has to be readable by anyone who might run it, which on this game is every approved character. Is that acceptable, or should reading need more than being approved?
-3. **Who may author?** Plotmasters and staff, as assumed, or any approved character who then submits for approval and cannot use it until approved? The second needs a `build_creatures` permission and brings more for staff to review.
-4. **Who approves?** Admins only, or a `manage_creatures` permission that can go to a trusted non-admin?
-5. **Is sharing between Plotmasters free of staff review?** The plan assumes a Plotmaster may run another Plotmaster's unapproved creature when it is shared with them.
-6. **Is approval the only control on what event runners get, or is there also a ceiling?** For instance no custom creature above a level, or none of a rarity. Monster Core itself goes high, so the plan assumes approval is enough.
-7. **Should "above extreme" block anything?** The plan only flags it and lets staff judge.
-8. **When an author leaves or stops being a Plotmaster,** do their unpublished creatures retire, as assumed, or pass to staff?
-9. **How many creatures may one author keep?** The plan assumes a configurable limit, 50 as a first figure, staff exempt.
-10. **Setting names.** Does a custom creature use Paizo's trait names, as the bestiary does, or Ea's? The validator warns on a trait the bestiary lacks unless it is listed in `creature_extra_traits`.
-11. **Should approved creatures also be written out as a house bestiary file,** kept in git with the game, so they survive a database loss and can be reviewed as text?
+Also from Raven: the pages belong in the portal's own design, styled from `game/styles` in `aresmush`, with a menu link Raven adds in `website.yml`; and the Bestiary tab says which stat blocks are there only to build from, since event runners add only Monster Core 1 and 2 creatures.
 
 For Harry, as engineering:
 

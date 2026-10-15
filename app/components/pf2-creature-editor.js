@@ -7,9 +7,21 @@ import {
   damageText,
   resisted,
   resistedText,
-  valued,
   valuedText,
 } from '../utils/pf2-stat-words';
+import {
+  costed,
+  costOf,
+  placed,
+  read,
+  rowAdded,
+  rowMoved,
+  rowRemoved,
+  rowSet,
+  runsOf,
+  textKept,
+  textShown,
+} from '../utils/pf2-block-edits';
 
 // The creature editor: a stat block built part by part, checked by the game as it changes, and saved as
 // a new creature or a new revision of one. `@start` is `{ id, name, block, notes, revision, cloned_from }`.
@@ -57,29 +69,6 @@ export default class Pf2CreatureEditor extends Component {
     this.checkSoon(0);
   }
 
-  // A copy of the block with one value set, however deep: `['saves', 'reflex']`.
-  placed(path, value) {
-    let copy = JSON.parse(JSON.stringify(this.block));
-    let held = copy;
-    path.slice(0, -1).forEach((key) => {
-      held[key] = held[key] || {};
-      held = held[key];
-    });
-    held[path[path.length - 1]] = value;
-    return copy;
-  }
-
-  number(value) {
-    return value === '' || value === null ? null : Number(value);
-  }
-
-  list(value) {
-    return value
-      .split(',')
-      .map((one) => one.trim())
-      .filter((one) => one.length);
-  }
-
   get traitsText() {
     return (this.block.traits || []).join(', ');
   }
@@ -124,6 +113,34 @@ export default class Pf2CreatureEditor extends Component {
     return !this.saving && this.check && this.errors.length === 0;
   }
 
+  get strikes() {
+    return (this.block.strikes || []).map((strike, index) => ({
+      index,
+      strike,
+      damageText: damageText(strike.damage),
+      traitsText: (strike.traits || []).join(', '),
+      effectsText: (strike.effects || []).join(', '),
+      runs: runsOf(this.mechanised, `Strike ${strike.name}`, strike.name),
+    }));
+  }
+
+  get abilities() {
+    return (this.block.actions || []).map((ability, index) => ({
+      index,
+      ability,
+      cost: costOf(ability),
+      text: textShown(ability.text),
+      traitsText: (ability.traits || []).join(', '),
+      runs: runsOf(this.mechanised, ability.name, ability.name),
+    }));
+  }
+
+  // Every change is a new block, which the game checks a moment later.
+  changed(block) {
+    this.block = block;
+    this.checkSoon();
+  }
+
   @action
   show(section) {
     this.section = section;
@@ -142,128 +159,71 @@ export default class Pf2CreatureEditor extends Component {
 
   @action
   setField(path, kind, event) {
-    let raw = event.target.value;
-    let value =
-      kind === 'number'
-        ? this.number(raw)
-        : kind === 'list'
-          ? this.list(raw)
-          : kind === 'valued'
-            ? valued(raw, this.block[path], path === 'skills' ? 'skill' : 'key')
-            : raw;
-    this.block = this.placed(path.split('.'), value);
-    this.checkSoon();
+    let keys = path.split('.');
+    let before = keys.reduce((held, key) => held?.[key], this.block);
+    this.changed(
+      placed(this.block, keys, read(kind, event.target.value, before)),
+    );
   }
 
   @action
   setResisted(field, event) {
-    this.block = this.placed([field], resisted(event.target.value));
-    this.checkSoon();
-  }
-
-  rows(field) {
-    return JSON.parse(JSON.stringify(this.block[field] || []));
+    this.changed(placed(this.block, [field], resisted(event.target.value)));
   }
 
   @action
   setRow(field, index, key, kind, event) {
-    let rows = this.rows(field);
-    let raw = event.target.value;
-    rows[index][key] =
-      kind === 'number'
-        ? this.number(raw)
-        : kind === 'list'
-          ? this.list(raw)
-          : raw;
-    this.block = this.placed([field], rows);
-    this.checkSoon();
+    this.changed(
+      rowSet(this.block, field, index, key, read(kind, event.target.value)),
+    );
   }
 
   @action
   setDamage(index, event) {
-    let rows = this.rows('strikes');
-    rows[index].damage = damage(event.target.value);
-    this.block = this.placed(['strikes'], rows);
-    this.checkSoon();
-  }
-
-  get strikes() {
-    return (this.block.strikes || []).map((strike, index) => ({
-      index,
-      strike,
-      damageText: damageText(strike.damage),
-      traitsText: (strike.traits || []).join(', '),
-      effectsText: (strike.effects || []).join(', '),
-      runs: this.mechanised.filter(
-        (one) =>
-          one.part === `Strike ${strike.name}` ||
-          one.part.startsWith(`${strike.name}: `),
+    this.changed(
+      rowSet(
+        this.block,
+        'strikes',
+        index,
+        'damage',
+        damage(event.target.value),
       ),
-    }));
-  }
-
-  get abilities() {
-    return (this.block.actions || []).map((ability, index) => ({
-      index,
-      ability,
-      cost:
-        ability.type === 'action' ? String(ability.cost || 1) : ability.type,
-      // The game breaks a line with %r; the box shows a line break.
-      text: (ability.text || '').replace(/%r/g, '\n'),
-      traitsText: (ability.traits || []).join(', '),
-      runs: this.mechanised.filter(
-        (one) =>
-          one.part === ability.name || one.part.startsWith(`${ability.name}: `),
-      ),
-    }));
+    );
   }
 
   @action
   setText(index, event) {
-    let rows = this.rows('actions');
-    rows[index].text = event.target.value.replace(/\r?\n/g, '%r');
-    this.block = this.placed(['actions'], rows);
-    this.checkSoon();
+    this.changed(
+      rowSet(
+        this.block,
+        'actions',
+        index,
+        'text',
+        textKept(event.target.value),
+      ),
+    );
   }
 
   @action
   setCost(index, event) {
-    let rows = this.rows('actions');
-    let value = event.target.value;
-    rows[index].type = ['1', '2', '3'].includes(value) ? 'action' : value;
-    rows[index].cost = ['1', '2', '3'].includes(value) ? Number(value) : null;
-    this.block = this.placed(['actions'], rows);
-    this.checkSoon();
+    let cost = costed(event.target.value);
+    let block = rowSet(this.block, 'actions', index, 'type', cost.type);
+    this.changed(rowSet(block, 'actions', index, 'cost', cost.cost));
   }
 
   @action
   addRow(field) {
-    let rows = this.rows(field);
-    rows.push(
-      field === 'strikes'
-        ? { name: '', bonus: 0, damage: [], traits: [], effects: [] }
-        : { name: '', type: 'action', cost: 1, traits: [], text: '' },
-    );
-    this.block = this.placed([field], rows);
-    this.checkSoon();
+    this.changed(rowAdded(this.block, field));
   }
 
   @action
   removeRow(field, index) {
-    let rows = this.rows(field);
-    rows.splice(index, 1);
-    this.block = this.placed([field], rows);
-    this.checkSoon();
+    this.changed(rowRemoved(this.block, field, index));
   }
 
   @action
   moveRow(field, index, by) {
-    let rows = this.rows(field);
-    let to = index + by;
-    if (to < 0 || to >= rows.length) return;
-    [rows[index], rows[to]] = [rows[to], rows[index]];
-    this.block = this.placed([field], rows);
-    this.checkSoon();
+    this.changed(rowMoved(this.block, field, index, by));
   }
 
   // The game checks the block a moment after the last change, not on every key.

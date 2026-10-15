@@ -45,4 +45,8 @@
   </ol>
 {{/if}}
 
-<p><LinkTo @route="pf2-creatures">All creatures</LinkTo></p>
+<p>
+  {{#if this.model.creature.can.edit}}<LinkTo @route="pf2-creature-edit" @model={{this.model.creature.ref}} class="btn btn-primary btn-sm">Edit</LinkTo>{{/if}}
+  {{#if this.model.creature.can.clone}}<LinkTo @route="pf2-creature-new" @query={{hash from=this.model.creature.ref}} class="btn btn-secondary btn-sm">Make a copy to change</LinkTo>{{/if}}
+  <LinkTo @route="pf2-creatures">All creatures</LinkTo>
+</p>

@@ -41,7 +41,8 @@
 {{/if}}
 
 {{#if this.model.creatures.length}}
-  <table class="table table-striped">
+  <div class="table-responsive">
+<table class="table table-striped">
     <thead>
       <tr>
         <th>Name</th>
@@ -71,6 +72,7 @@
       {{/each}}
     </tbody>
   </table>
+</div>
 
   <p>
     {{this.model.total}} in all.

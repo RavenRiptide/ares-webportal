@@ -13,6 +13,7 @@
   <p><b>Difficulty:</b> {{this.model.difficulty}}</p>
 {{/if}}
 
+<div class="table-responsive">
 <table class="table table-striped">
   <thead>
     <tr>
@@ -47,6 +48,7 @@
     {{/each}}
   </tbody>
 </table>
+</div>
 
 <details class="pf2-encounter-section">
   <summary><h2>History ({{this.model.history.length}} {{if (eq this.model.history.length 1) "change" "changes"}})</h2></summary>

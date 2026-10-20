@@ -118,6 +118,7 @@
     {{#if (eq this.section "strikes")}}
       {{#each this.strikes key="index" as |row|}}
         <fieldset class="border rounded p-2 mb-3">
+          <legend class="fs-6">Strike {{row.strike.name}}</legend>
           <div class="row g-2">
             <div class="col-sm-5">
               <label class="form-label" for="pf2-ed-sn-{{row.index}}">Name</label>
@@ -142,8 +143,8 @@
           </div>
           {{#each row.runs as |one|}}<div class="small mt-1">{{one.part}}: {{one.says}}</div>{{/each}}
           <div class="mt-2">
-            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "strikes" row.index -1)}}>Up</button>
-            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "strikes" row.index 1)}}>Down</button>
+            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "strikes" row.index -1)}}>Move {{row.strike.name}} up</button>
+            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "strikes" row.index 1)}}>Move {{row.strike.name}} down</button>
             <button type="button" class="btn btn-danger btn-sm" {{on "click" (fn this.removeRow "strikes" row.index)}}>Remove {{row.strike.name}}</button>
           </div>
         </fieldset>
@@ -154,6 +155,7 @@
     {{#if (eq this.section "abilities")}}
       {{#each this.abilities key="index" as |row|}}
         <fieldset class="border rounded p-2 mb-3">
+          <legend class="fs-6">Ability {{row.ability.name}}</legend>
           <div class="row g-2">
             <div class="col-sm-6">
               <label class="form-label" for="pf2-ed-an-{{row.index}}">Name</label>
@@ -178,8 +180,8 @@
           </div>
           {{#each row.runs as |one|}}<div class="small mt-1">{{one.says}}</div>{{/each}}
           <div class="mt-2">
-            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "actions" row.index -1)}}>Up</button>
-            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "actions" row.index 1)}}>Down</button>
+            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "actions" row.index -1)}}>Move {{row.ability.name}} up</button>
+            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "actions" row.index 1)}}>Move {{row.ability.name}} down</button>
             <button type="button" class="btn btn-danger btn-sm" {{on "click" (fn this.removeRow "actions" row.index)}}>Remove {{row.ability.name}}</button>
           </div>
         </fieldset>
@@ -292,16 +294,18 @@
   </div>
 
   <div class="col-lg-5">
-    {{#if this.errors.length}}
-      <div class="alert alert-danger">
-        {{#each this.errors as |one|}}<div>{{one.message}}</div>{{/each}}
-      </div>
-    {{/if}}
-    {{#if this.warnings.length}}
-      <div class="alert alert-warning">
-        {{#each this.warnings as |one|}}<div>{{one.message}}</div>{{/each}}
-      </div>
-    {{/if}}
+    <div aria-live="polite">
+      {{#if this.errors.length}}
+        <div class="alert alert-danger">
+          {{#each this.errors as |one|}}<div>{{one.message}}</div>{{/each}}
+        </div>
+      {{/if}}
+      {{#if this.warnings.length}}
+        <div class="alert alert-warning">
+          {{#each this.warnings as |one|}}<div>{{one.message}}</div>{{/each}}
+        </div>
+      {{/if}}
+    </div>
     <div class="card">
       <div class="card-body">
         {{#each this.check.lines as |line|}}<div class="pre-wrap">{{line}}</div>{{/each}}

@@ -1,6 +1,6 @@
 # Custom Creatures
 
-**Status: answered** on 2026-10-14; phase 1 under way. Proposed 2026-10-10. Raven's answers to the open questions are in §8 and are folded into the sections below. Server work would go on `feat/derived-stats` in `aresmush`, pages on `feat/pf2-encounter-pages` in `ares-webportal`.
+**Status: built** by 2026-10-20, phases 1 to 5, on RavenRiptide/aresmush#2 and RavenRiptide/ares-webportal#1, but for the Golarion-to-Ea trait list (§8, answer 10). Answered on 2026-10-14. Proposed 2026-10-10. Raven's answers to the open questions are in §8 and are folded into the sections below. Server work would go on `feat/derived-stats` in `aresmush`, pages on `feat/pf2-encounter-pages` in `ares-webportal`.
 
 Asked for: help staff build out custom creatures, with an access layer deciding who gets to use them, and probably a web-based creature creator.
 

@@ -85,6 +85,25 @@ export function textKept(text) {
   return (text || '').replace(/\r?\n/g, '%r');
 }
 
+// The shapes its abilities give it, as Foundry declares them: a werewolf's Change Shape offers hybrid,
+// humanoid and animal. `[{ value, label }]`, each once.
+export function shapesOf(block) {
+  let seen = new Set();
+  return (block?.actions || [])
+    .flatMap((one) => one.rules || [])
+    .filter((rule) => rule.key === 'RollOption')
+    .flatMap((rule) => rule.suboptions || [])
+    .filter((choice) => {
+      let fresh = !seen.has(choice.value);
+      seen.add(choice.value);
+      return fresh;
+    })
+    .map((choice) => ({
+      value: choice.value,
+      label: choice.label || choice.value,
+    }));
+}
+
 // What the game runs of one Strike or ability, out of what it runs of the whole block.
 export function runsOf(mechanised, part, name) {
   return (mechanised || []).filter(

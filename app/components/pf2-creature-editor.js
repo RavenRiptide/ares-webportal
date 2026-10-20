@@ -19,6 +19,7 @@ import {
   rowRemoved,
   rowSet,
   runsOf,
+  shapesOf,
   textKept,
   textShown,
 } from '../utils/pf2-block-edits';
@@ -95,6 +96,10 @@ export default class Pf2CreatureEditor extends Component {
 
   get speedText() {
     return valuedText(this.block.speeds);
+  }
+
+  get shapes() {
+    return shapesOf(this.block);
   }
 
   get errors() {

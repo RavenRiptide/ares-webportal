@@ -45,6 +45,18 @@
         </datalist>
         <small>The bestiary's traits and the setting's ancestries are both known; a trait neither uses is warned of.</small>
       </div>
+      {{#if this.shapes.length}}
+        <div class="mb-3">
+          <label class="form-label" for="pf2-ed-shape">Starts a fight as</label>
+          <select id="pf2-ed-shape" class="form-select" {{on "change" (fn this.setField "shape" "text")}}>
+            <option value="" selected={{not this.block.shape}}>As its stat block has it</option>
+            {{#each this.shapes as |shape|}}
+              <option value={{shape.value}} selected={{eq shape.value this.block.shape}}>{{shape.label}}</option>
+            {{/each}}
+          </select>
+          <small>Which Strikes it has hangs on its shape. A GM may still name another as it is added, <code>+e/add &lt;name&gt;/&lt;shape&gt;</code>, and it changes shape in a fight with its ability.</small>
+        </div>
+      {{/if}}
     {{/if}}
 
     {{#if (eq this.section "defences")}}

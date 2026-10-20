@@ -9,6 +9,7 @@ import {
   rowRemoved,
   rowSet,
   runsOf,
+  shapesOf,
   textKept,
   textShown,
 } from 'ares-webportal/utils/pf2-block-edits';
@@ -88,6 +89,29 @@ module('Unit | Utility | pf2-block-edits', function (hooks) {
     assert.deepEqual(costed('free'), { type: 'free', cost: null });
     assert.strictEqual(textShown('a%rb'), 'a\nb');
     assert.strictEqual(textKept('a\r\nb'), 'a%rb');
+  });
+
+  test('the shapes its abilities give it, each once', function (assert) {
+    let shaping = {
+      key: 'RollOption',
+      option: 'change-shape',
+      suboptions: [
+        { value: 'hybrid', label: 'Hybrid' },
+        { value: 'animal', label: 'Animal' },
+      ],
+    };
+    let block = {
+      actions: [
+        { name: 'Change Shape', rules: [shaping] },
+        { name: 'Other', rules: [shaping, { key: 'Note' }] },
+      ],
+    };
+
+    assert.deepEqual(shapesOf(block), [
+      { value: 'hybrid', label: 'Hybrid' },
+      { value: 'animal', label: 'Animal' },
+    ]);
+    assert.deepEqual(shapesOf(this.block), []);
   });
 
   test('what the game runs of one part', function (assert) {

@@ -1,0 +1,8 @@
+{{#if this.encounter}}
+  <li><hr class="dropdown-divider"></li>
+  <li>
+    <a href="/pf2/encounter/{{this.encounter.id}}" target="_blank" rel="noopener noreferrer" class="dropdown-item">
+      Open {{if this.encounter.exploring "exploration" "encounter"}} {{this.encounter.id}}
+    </a>
+  </li>
+{{/if}}

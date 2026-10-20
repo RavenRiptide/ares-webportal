@@ -4,7 +4,7 @@
 {{#if this.start}}
   <Pf2CreatureEditor @options={{this.model.options}} @start={{this.start}} />
 {{else}}
-  <p>Three ways to begin. Each opens the editor with something to change.</p>
+  <p>Four ways to begin. Each opens the editor with something to change.</p>
 
   <div class="card mb-3">
     <div class="card-body">
@@ -34,6 +34,31 @@
       <button type="button" class="btn btn-secondary" {{on "click" (fn this.begin "described" null this.described)}}>Read it</button>
     </div>
   </div>
+
+  {{#if this.roadMaps.length}}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h2 class="h5">From GM Core's road maps</h2>
+        <p>A role at a level: every figure the road map names at its band in GM Core's tables, and the rest moderate.</p>
+        <div class="row g-2 align-items-end">
+          <div class="col-sm-3">
+            <label class="form-label" for="pf2-new-rm-level">Level</label>
+            <input id="pf2-new-rm-level" type="text" inputmode="numeric" class="form-control" value={{this.roadMapLevel}} {{on "input" (fn this.typed "roadMapLevel")}}>
+          </div>
+          <div class="col-sm-5">
+            <label class="form-label" for="pf2-new-rm">Road map</label>
+            <select id="pf2-new-rm" class="form-select" {{on "change" (fn this.typed "roadMapName")}}>
+              {{#each this.roadMaps as |one|}}
+                <option value={{one.name}} selected={{eq one.name this.roadMap.name}}>{{one.name}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="col-auto"><button type="button" class="btn btn-secondary" {{on "click" this.beginFromRoadMap}}>Begin</button></div>
+        </div>
+        <p class="mt-2 mb-0"><small>GM Core: {{this.roadMap.says}}</small></p>
+      </div>
+    </div>
+  {{/if}}
 
   <div class="card mb-3">
     <div class="card-body">

@@ -6,16 +6,31 @@ import { inject as service } from '@ember/service';
 export default class Pf2CreatureNewController extends Controller {
   @service gameApi;
 
-  queryParams = ['from', 'level', 'words'];
+  queryParams = ['from', 'level', 'words', 'road_map'];
 
   @tracked from = null;
   @tracked level = null;
   @tracked words = null;
+  @tracked road_map = null;
 
   @tracked search = '';
   @tracked found = [];
   @tracked blankLevel = '1';
   @tracked described = '';
+  @tracked roadMapLevel = '1';
+  @tracked roadMapName = null;
+
+  get roadMaps() {
+    return this.model.options?.road_maps || [];
+  }
+
+  // The chosen road map, the first until one is chosen, with GM Core's words for it.
+  get roadMap() {
+    return (
+      this.roadMaps.find((one) => one.name === this.roadMapName) ||
+      this.roadMaps[0]
+    );
+  }
 
   get start() {
     let start = this.model.start;
@@ -46,9 +61,15 @@ export default class Pf2CreatureNewController extends Controller {
   }
 
   @action
-  begin(from, level, words) {
+  begin(from, level, words, roadMap) {
     this.from = from;
     this.level = level || null;
     this.words = words || null;
+    this.road_map = roadMap || null;
+  }
+
+  @action
+  beginFromRoadMap() {
+    this.begin('road_map', this.roadMapLevel, null, this.roadMap?.name);
   }
 }

@@ -110,3 +110,113 @@ export function runsOf(mechanised, part, name) {
     (one) => one.part === part || one.part.startsWith(`${name}: `),
   );
 }
+
+// Spellcasting, entry by entry, as the bestiary writes it: spells by rank, `slots` by rank for a
+// spontaneous caster, and for an innate one `uses` a day by spell, or `(At Will)` or `(Constant)` after
+// its name.
+
+const SUFFIX = /\s*\((At Will|Constant)\)$/i;
+
+export function castingName(tradition, type) {
+  let word = (one) => (one ? one.charAt(0).toUpperCase() + one.slice(1) : '');
+  return `${word(tradition)} ${word(type)} Spells`.trim();
+}
+
+export function castingAdded(block) {
+  return placed(
+    block,
+    ['spellcasting'],
+    [
+      ...rows(block, 'spellcasting'),
+      {
+        name: castingName('arcane', 'innate'),
+        tradition: 'arcane',
+        type: 'innate',
+        dc: 0,
+        attack: 0,
+        spells: {},
+      },
+    ],
+  );
+}
+
+// A spell's own name, without how often an innate one is cast.
+export function spellName(name) {
+  return String(name || '').replace(SUFFIX, '');
+}
+
+// How often an innate spell is cast: `at will`, `constant`, or a number a day.
+export function frequencyOf(casting, name) {
+  let found = String(name || '').match(SUFFIX);
+  if (found) return found[1].toLowerCase();
+  return Number((casting.uses || {})[name]) || 1;
+}
+
+function casting(block, index) {
+  return copied(block.spellcasting?.[index] || {});
+}
+
+function withCasting(block, index, held) {
+  let all = rows(block, 'spellcasting');
+  all[index] = held;
+  return placed(block, ['spellcasting'], all);
+}
+
+// A spell at a rank. A spontaneous caster gets a slot at a rank it had none for, which it needs to cast.
+export function spellAdded(block, index, rank, name) {
+  let held = casting(block, index);
+  let key = String(rank);
+  held.spells = { ...(held.spells || {}) };
+  held.spells[key] = [...(held.spells[key] || []), name];
+  if (
+    held.type === 'spontaneous' &&
+    Number(rank) > 0 &&
+    !(held.slots || {})[key]
+  )
+    held.slots = { ...(held.slots || {}), [key]: 1 };
+  return withCasting(block, index, held);
+}
+
+export function spellRemoved(block, index, rank, at) {
+  let held = casting(block, index);
+  let key = String(rank);
+  let names = [...((held.spells || {})[key] || [])];
+  let [gone] = names.splice(at, 1);
+  held.spells = { ...(held.spells || {}), [key]: names };
+  if (!names.length) delete held.spells[key];
+  if (held.uses && gone in held.uses) {
+    held.uses = { ...held.uses };
+    delete held.uses[gone];
+    if (!Object.keys(held.uses).length) delete held.uses;
+  }
+  return withCasting(block, index, held);
+}
+
+export function slotsSet(block, index, rank, count) {
+  let held = casting(block, index);
+  held.slots = { ...(held.slots || {}), [String(rank)]: Number(count) || 0 };
+  return withCasting(block, index, held);
+}
+
+// An innate spell's frequency: `at will` and `constant` are written after its name, a number a day as
+// its uses, and once a day as nothing at all.
+export function frequencySet(block, index, rank, at, frequency) {
+  let held = casting(block, index);
+  let key = String(rank);
+  let names = [...((held.spells || {})[key] || [])];
+  let was = names[at];
+  let base = spellName(was);
+  let named =
+    frequency === 'at will'
+      ? `${base} (At Will)`
+      : frequency === 'constant'
+        ? `${base} (Constant)`
+        : base;
+  names[at] = named;
+  held.spells = { ...(held.spells || {}), [key]: names };
+  held.uses = { ...(held.uses || {}) };
+  delete held.uses[was];
+  if (Number(frequency) > 1) held.uses[named] = Number(frequency);
+  if (!Object.keys(held.uses).length) delete held.uses;
+  return withCasting(block, index, held);
+}

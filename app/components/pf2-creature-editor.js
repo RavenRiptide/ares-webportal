@@ -10,7 +10,15 @@ import {
   valuedText,
 } from '../utils/pf2-stat-words';
 import {
+  castingAdded,
+  castingName,
   costed,
+  frequencyOf,
+  frequencySet,
+  slotsSet,
+  spellAdded,
+  spellName,
+  spellRemoved,
   costOf,
   placed,
   read,
@@ -44,8 +52,27 @@ export default class Pf2CreatureEditor extends Component {
     { key: 'senses', label: 'Senses and skills' },
     { key: 'strikes', label: 'Strikes' },
     { key: 'abilities', label: 'Abilities' },
+    { key: 'spells', label: 'Spells' },
     { key: 'notes', label: 'Notes' },
   ];
+
+  traditions = ['arcane', 'divine', 'occult', 'primal'];
+  castingTypes = ['prepared', 'spontaneous', 'innate', 'focus', 'items'];
+  ranks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  // How often an innate spell is cast, as its words say it.
+  frequencies = [
+    { value: '1', label: 'once a day' },
+    { value: '2', label: 'twice a day' },
+    { value: '3', label: 'three times a day' },
+    { value: 'at will', label: 'at will' },
+    { value: 'constant', label: 'constant' },
+  ];
+
+  // What each spellcasting entry's search found: `{ [index]: { words, rank, results } }`. Its words and
+  // rank are kept as typed without redrawing, which would take the focus from the box being typed in.
+  @tracked searches = {};
+  typing = {};
 
   figures = [
     { key: 'ac', label: 'AC' },
@@ -140,6 +167,48 @@ export default class Pf2CreatureEditor extends Component {
     }));
   }
 
+  get castings() {
+    return (this.block.spellcasting || []).map((casting, index) => ({
+      index,
+      casting,
+      innate: casting.type === 'innate',
+      spontaneous: casting.type === 'spontaneous',
+      search: this.searched(index),
+      ranks: Object.keys(casting.spells || {})
+        .map(Number)
+        .sort((one, two) => one - two)
+        .map((rank) => ({
+          rank,
+          label: rank === 0 ? 'Cantrips' : `Rank ${rank}`,
+          slots: (casting.slots || {})[rank] ?? '',
+          spells: (casting.spells[rank] || []).map((name, at) => ({
+            name,
+            at,
+            base: spellName(name),
+            frequency: String(frequencyOf(casting, name)),
+            announced: this.mechanised.some(
+              (one) => one.part === `Spell ${name}` && one.runs === 'announced',
+            ),
+          })),
+        })),
+    }));
+  }
+
+  // What an entry's search found, and whether its words are a spell the game does not list, which the
+  // author may add as written.
+  searched(index) {
+    let held = this.searches[index] || { words: '', rank: '', results: null };
+    let words = (held.words || '').trim().toLowerCase();
+    let listed = (held.results || []).some(
+      (one) => one.name.toLowerCase() === words,
+    );
+    return {
+      ...held,
+      done: Array.isArray(held.results),
+      unlisted: Array.isArray(held.results) && words && !listed,
+    };
+  }
+
   // Every change is a new block, which the game checks a moment later.
   changed(block) {
     this.block = block;
@@ -214,6 +283,97 @@ export default class Pf2CreatureEditor extends Component {
     let cost = costed(event.target.value);
     let block = rowSet(this.block, 'actions', index, 'type', cost.type);
     this.changed(rowSet(block, 'actions', index, 'cost', cost.cost));
+  }
+
+  @action
+  addCasting() {
+    this.changed(castingAdded(this.block));
+  }
+
+  // A tradition or way of casting changed renames an entry still called by the two.
+  @action
+  setCasting(index, key, kind, event) {
+    let before = this.block.spellcasting[index];
+    let value = read(kind, event.target.value);
+    let block = rowSet(this.block, 'spellcasting', index, key, value);
+    if (
+      ['tradition', 'type'].includes(key) &&
+      before.name === castingName(before.tradition, before.type)
+    ) {
+      let after = block.spellcasting[index];
+      block = rowSet(
+        block,
+        'spellcasting',
+        index,
+        'name',
+        castingName(after.tradition, after.type),
+      );
+    }
+    this.changed(block);
+  }
+
+  @action
+  typedSearch(index, key, event) {
+    this.typing[index] = { ...this.typing[index], [key]: event.target.value };
+  }
+
+  @action
+  async searchSpells(index, event) {
+    event.preventDefault();
+    let held = {
+      words: '',
+      rank: '',
+      ...this.searches[index],
+      ...this.typing[index],
+    };
+    let answer = await this.gameApi.request('pf2CreatureSpells', {
+      words: held.words,
+      tradition: this.block.spellcasting[index].tradition,
+    });
+    if (this.isDestroying || this.isDestroyed) return;
+    this.searches = {
+      ...this.searches,
+      [index]: { ...held, results: answer?.spells || [] },
+    };
+  }
+
+  // At the rank chosen, which heightens it, or at its own.
+  @action
+  addFound(index, found) {
+    let rank = { ...this.searches[index], ...this.typing[index] }.rank;
+    this.addSpell(
+      index,
+      rank === '' || rank === undefined ? found.rank : Number(rank),
+      found.name,
+    );
+  }
+
+  addSpell(index, rank, name) {
+    this.changed(spellAdded(this.block, index, rank, name));
+  }
+
+  // A spell the game does not list, as the author writes it, at the rank searched for or rank 1.
+  @action
+  addWritten(index) {
+    let held = { ...this.searches[index], ...this.typing[index] };
+    let name = (held.words || '').trim();
+    if (!name) return;
+    this.addSpell(index, held.rank === '' ? 1 : Number(held.rank), name);
+  }
+
+  @action
+  removeSpell(index, rank, at) {
+    this.changed(spellRemoved(this.block, index, rank, at));
+  }
+
+  @action
+  setSlots(index, rank, event) {
+    this.changed(slotsSet(this.block, index, rank, event.target.value));
+  }
+
+  @action
+  setFrequency(index, rank, at, event) {
+    this.changed(frequencySet(this.block, index, rank, at, event.target.value));
   }
 
   @action

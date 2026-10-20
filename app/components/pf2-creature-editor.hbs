@@ -116,7 +116,7 @@
     {{/if}}
 
     {{#if (eq this.section "strikes")}}
-      {{#each this.strikes as |row|}}
+      {{#each this.strikes key="index" as |row|}}
         <fieldset class="border rounded p-2 mb-3">
           <div class="row g-2">
             <div class="col-sm-5">
@@ -152,7 +152,7 @@
     {{/if}}
 
     {{#if (eq this.section "abilities")}}
-      {{#each this.abilities as |row|}}
+      {{#each this.abilities key="index" as |row|}}
         <fieldset class="border rounded p-2 mb-3">
           <div class="row g-2">
             <div class="col-sm-6">
@@ -185,6 +185,99 @@
         </fieldset>
       {{/each}}
       <button type="button" class="btn btn-primary btn-sm" {{on "click" (fn this.addRow "actions")}}>Add an ability</button>
+    {{/if}}
+
+    {{#if (eq this.section "spells")}}
+      <p>How often it casts follows how it casts: a prepared spell once for each time it is listed, a spontaneous caster's spells from its slots at each rank, and an innate spell as often as it says. The game counts these castings in a fight and warns past them. A cantrip is cast at half its level, rounded up.</p>
+      {{#each this.castings key="index" as |entry|}}
+        <fieldset class="border rounded p-2 mb-3">
+          <legend class="fs-6">{{entry.casting.name}}</legend>
+          <div class="row g-2">
+            <div class="col-sm-4">
+              <label class="form-label" for="pf2-ed-cn-{{entry.index}}">Name</label>
+              <input id="pf2-ed-cn-{{entry.index}}" type="text" class="form-control" value={{entry.casting.name}} {{on "change" (fn this.setCasting entry.index "name" "text")}}>
+            </div>
+            <div class="col-sm-2">
+              <label class="form-label" for="pf2-ed-ct-{{entry.index}}">Tradition</label>
+              <select id="pf2-ed-ct-{{entry.index}}" class="form-select" {{on "change" (fn this.setCasting entry.index "tradition" "text")}}>
+                {{#each this.traditions as |one|}}<option value={{one}} selected={{eq one entry.casting.tradition}}>{{one}}</option>{{/each}}
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <label class="form-label" for="pf2-ed-cy-{{entry.index}}">Cast as</label>
+              <select id="pf2-ed-cy-{{entry.index}}" class="form-select" {{on "change" (fn this.setCasting entry.index "type" "text")}}>
+                {{#each this.castingTypes as |one|}}<option value={{one}} selected={{eq one entry.casting.type}}>{{one}}</option>{{/each}}
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <label class="form-label" for="pf2-ed-cd-{{entry.index}}">Spell DC</label>
+              <input id="pf2-ed-cd-{{entry.index}}" type="text" inputmode="numeric" class="form-control" value={{entry.casting.dc}} {{on "input" (fn this.setCasting entry.index "dc" "number")}}>
+            </div>
+            <div class="col-sm-2">
+              <label class="form-label" for="pf2-ed-ck-{{entry.index}}">Spell attack</label>
+              <input id="pf2-ed-ck-{{entry.index}}" type="text" inputmode="numeric" class="form-control" value={{entry.casting.attack}} {{on "input" (fn this.setCasting entry.index "attack" "number")}}>
+            </div>
+          </div>
+
+          {{#each entry.ranks key="rank" as |rank|}}
+            <div class="mt-2">
+              <b>{{rank.label}}</b>
+              {{#if (and entry.spontaneous rank.rank)}}
+                <label class="ms-2" for="pf2-ed-cs-{{entry.index}}-{{rank.rank}}">slots</label>
+                <input id="pf2-ed-cs-{{entry.index}}-{{rank.rank}}" type="text" inputmode="numeric" class="form-control form-control-sm d-inline-block w-auto" size="2" value={{rank.slots}} {{on "input" (fn this.setSlots entry.index rank.rank)}}>
+              {{/if}}
+              <ul class="list-unstyled ms-3 mb-0">
+                {{#each rank.spells key="at" as |spell|}}
+                  <li>
+                    {{spell.base}}{{#if spell.announced}} <small>(announced: the GM runs it)</small>{{/if}}
+                    {{#if entry.innate}}
+                      <select class="form-select form-select-sm d-inline-block w-auto" aria-label="How often {{spell.base}} is cast" {{on "change" (fn this.setFrequency entry.index rank.rank spell.at)}}>
+                        {{#each this.frequencies as |often|}}<option value={{often.value}} selected={{eq often.value spell.frequency}}>{{often.label}}</option>{{/each}}
+                      </select>
+                    {{/if}}
+                    <button type="button" class="btn btn-link btn-sm" {{on "click" (fn this.removeSpell entry.index rank.rank spell.at)}}>Remove {{spell.base}}</button>
+                  </li>
+                {{/each}}
+              </ul>
+            </div>
+          {{/each}}
+
+          <form class="row g-2 align-items-end mt-2" aria-label="Find a spell for {{entry.casting.name}}" {{on "submit" (fn this.searchSpells entry.index)}}>
+            <div class="col-sm-5">
+              <label class="form-label" for="pf2-ed-sw-{{entry.index}}">Find a spell</label>
+              <input id="pf2-ed-sw-{{entry.index}}" type="text" class="form-control" value={{entry.search.words}} {{on "input" (fn this.typedSearch entry.index "words")}}>
+            </div>
+            <div class="col-sm-3">
+              <label class="form-label" for="pf2-ed-sr-{{entry.index}}">Add at rank</label>
+              <select id="pf2-ed-sr-{{entry.index}}" class="form-select" {{on "change" (fn this.typedSearch entry.index "rank")}}>
+                <option value="" selected={{eq entry.search.rank ""}}>its own</option>
+                {{#each this.ranks as |one|}}<option value={{one}} selected={{eq (concat one) entry.search.rank}}>{{if one one "cantrip"}}</option>{{/each}}
+              </select>
+            </div>
+            <div class="col-auto"><button type="submit" class="btn btn-secondary">Look</button></div>
+          </form>
+          {{#if entry.search.done}}
+            <ul class="list-unstyled mt-2">
+              {{#each entry.search.results as |found|}}
+                <li>
+                  <button type="button" class="btn btn-primary btn-sm" {{on "click" (fn this.addFound entry.index found)}}>Add</button>
+                  {{found.name}} &middot; {{if found.rank (concat "rank " found.rank) "cantrip"}} &middot; {{pf2-join found.traditions ", "}}{{#unless found.rolled}} &middot; announced{{/unless}}
+                </li>
+              {{else}}
+                <li>The game lists no such spell{{#if entry.casting.tradition}} for the {{entry.casting.tradition}} tradition{{/if}}.</li>
+              {{/each}}
+            </ul>
+            {{#if entry.search.unlisted}}
+              <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.addWritten entry.index)}}>Add "{{entry.search.words}}" as written</button>
+            {{/if}}
+          {{/if}}
+
+          <div class="mt-2">
+            <button type="button" class="btn btn-danger btn-sm" {{on "click" (fn this.removeRow "spellcasting" entry.index)}}>Remove {{entry.casting.name}}</button>
+          </div>
+        </fieldset>
+      {{/each}}
+      <button type="button" class="btn btn-primary btn-sm" {{on "click" this.addCasting}}>Add spellcasting</button>
     {{/if}}
 
     {{#if (eq this.section "notes")}}
@@ -223,7 +316,7 @@
       </ul>
     {{/if}}
     {{#if this.check.unwritable.length}}
-      <p class="small mt-2">Kept as it is, and not changed here: {{pf2-join this.check.unwritable ", "}}.</p>
+      <p class="small mt-2">Saved here, but past what the one-line form <code>creature/describe</code> gives can hold: {{pf2-join this.check.unwritable ", "}}.</p>
     {{/if}}
   </div>
 </div>

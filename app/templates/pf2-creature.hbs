@@ -3,9 +3,9 @@
 
 {{#if (eq this.model.creature.source "saved")}}
   <p>
-    <code>c:{{this.model.creature.id}}</code> &middot; by {{this.model.creature.owner}} &middot; {{this.model.creature.status}}
+    <code>c:{{this.model.creature.id}}</code> &middot; by {{this.model.creature.owner}} &middot; {{this.model.creature.status}}{{#if this.ownApproved}} for its author's storylines{{/if}}
     &middot; revision {{this.model.creature.revision}}{{#if this.model.creature.can.edit}} of {{this.model.creature.latest}}{{/if}}
-    {{#if this.model.creature.published_revision}} &middot; published: revision {{this.model.creature.published_revision}}{{/if}}
+    {{#if this.model.creature.published_revision}} &middot; approved: revision {{this.model.creature.published_revision}}{{/if}}
   </p>
 {{else}}
   <p>From the bestiary.</p>
@@ -41,10 +41,29 @@
       {{else if this.retired}}
         <p>Retired: off the lists, and not to be added.</p>
       {{else}}
-        <p>Once an admin approves it, anyone may add it, as it stands then. What you change after waits for the next approval.</p>
+        {{#if this.creature.can.make_public}}
+          <p>Approved for your own storylines: you and those you share it with add it, as approved, and nobody else sees it. Making it public lets anyone add it, as it was approved, without asking again.</p>
+          <button type="button" class="btn btn-secondary btn-sm mb-3" {{on "click" this.makePublic}}>Make it public</button>
+        {{/if}}
+        {{#if this.nothingNew}}
+          <p>Its latest revision is the one approved. What you change next waits for the next approval.</p>
+        {{else}}
+        <p>Once an admin approves it, it is added as it stands then. What you change after waits for the next approval.</p>
+        <fieldset class="mb-2">
+          <legend class="form-label fs-6">Approved for</legend>
+          <div class="form-check">
+            <input id="pf2-cr-for-everyone" type="radio" name="pf2-cr-for" class="form-check-input" checked={{eq this.approvedFor "everyone"}} {{on "change" (fn this.choose "everyone")}}>
+            <label class="form-check-label" for="pf2-cr-for-everyone">Everyone: anyone may add it</label>
+          </div>
+          <div class="form-check">
+            <input id="pf2-cr-for-author" type="radio" name="pf2-cr-for" class="form-check-input" checked={{eq this.approvedFor "author"}} {{on "change" (fn this.choose "author")}}>
+            <label class="form-check-label" for="pf2-cr-for-author">Only my storylines: me, and those I share it with</label>
+          </div>
+        </fieldset>
         <label class="form-label" for="pf2-cr-note">A note for the admins</label>
         <input id="pf2-cr-note" type="text" class="form-control mb-2" value={{this.note}} {{on "input" (fn this.typed "note")}}>
         <button type="button" class="btn btn-primary btn-sm" {{on "click" this.submit}}>Submit for approval</button>
+        {{/if}}
       {{/if}}
     </div>
   </div>
@@ -54,12 +73,16 @@
   <div class="card mb-3">
     <div class="card-body">
       <h2 class="h5">Sharing</h2>
-      <p>Plotmasters and admins it is shared with add it as it stands, without approval.</p>
       <form {{on "submit" this.share}}>
-        <div class="form-check mb-2">
-          <input id="pf2-cr-pms" type="checkbox" class="form-check-input" checked={{this.sharedWithPlotmasters}} {{on "change" this.toggle}}>
-          <label class="form-check-label" for="pf2-cr-pms">Every Plotmaster</label>
-        </div>
+        {{#if this.ownApproved}}
+          <p>Anyone you name here, a co-GM of your storyline, adds it as it was approved.</p>
+        {{else}}
+          <p>Plotmasters and admins it is shared with add it as it stands, without approval.</p>
+          <div class="form-check mb-2">
+            <input id="pf2-cr-pms" type="checkbox" class="form-check-input" checked={{this.sharedWithPlotmasters}} {{on "change" this.toggle}}>
+            <label class="form-check-label" for="pf2-cr-pms">Every Plotmaster</label>
+          </div>
+        {{/if}}
         <label class="form-label" for="pf2-cr-with">And these, by name, separated by commas</label>
         <input id="pf2-cr-with" type="text" class="form-control mb-2" value={{this.shareText}} {{on "input" (fn this.typed "shareNames")}}>
         <button type="submit" class="btn btn-secondary btn-sm">Share</button>

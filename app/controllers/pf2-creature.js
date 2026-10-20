@@ -13,6 +13,7 @@ export default class Pf2CreatureController extends Controller {
   @tracked note = '';
   @tracked shareNames = null;
   @tracked plotmasters = null;
+  @tracked approvedFor = 'everyone';
 
   get creature() {
     return this.model.creature;
@@ -24,6 +25,19 @@ export default class Pf2CreatureController extends Controller {
 
   get retired() {
     return this.creature.status === 'retired';
+  }
+
+  // The latest revision is the approved one, so there is nothing to submit.
+  get nothingNew() {
+    return (
+      this.creature.published_revision &&
+      this.creature.published_revision === this.creature.latest
+    );
+  }
+
+  // Approved for its author's storylines only.
+  get ownApproved() {
+    return this.creature.approved_for === 'author';
   }
 
   get shareText() {
@@ -59,8 +73,18 @@ export default class Pf2CreatureController extends Controller {
   }
 
   @action
+  choose(approvedFor) {
+    this.approvedFor = approvedFor;
+  }
+
+  @action
   submit() {
-    this.act('submit', { note: this.note });
+    this.act('submit', { note: this.note, for: this.approvedFor });
+  }
+
+  @action
+  makePublic() {
+    this.act('make_public');
   }
 
   @action
@@ -80,6 +104,9 @@ export default class Pf2CreatureController extends Controller {
       .split(',')
       .map((one) => one.trim())
       .filter((one) => one.length);
-    this.act('share', { plotmasters: this.sharedWithPlotmasters, with: names });
+    this.act('share', {
+      plotmasters: !this.ownApproved && this.sharedWithPlotmasters,
+      with: names,
+    });
   }
 }

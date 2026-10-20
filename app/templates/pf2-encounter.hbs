@@ -31,7 +31,10 @@
       <tr class={{if (eq one.name this.model.current) "table-info"}}>
         <td>#{{one.id}}</td>
         <td>{{one.initiative}}</td>
-        <td>{{one.name}}</td>
+        <td>
+          {{one.name}}
+          {{#if one.shapes.length}}<br><small>{{pf2-join one.shapes "; "}}</small>{{/if}}
+        </td>
         <td>
           {{pf2-join one.conditions ", "}}
           {{#if one.effects.length}}<br><small>{{pf2-join one.effects ", "}}</small>{{/if}}

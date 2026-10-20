@@ -73,7 +73,7 @@
   <div class="card mb-3">
     <div class="card-body">
       <h2 class="h5">Sharing</h2>
-      <form {{on "submit" this.share}}>
+      <form aria-label="Share" {{on "submit" this.share}}>
         {{#if this.ownApproved}}
           <p>Anyone you name here, a co-GM of your storyline, adds it as it was approved.</p>
         {{else}}
@@ -87,6 +87,21 @@
         <input id="pf2-cr-with" type="text" class="form-control mb-2" value={{this.shareText}} {{on "input" (fn this.typed "shareNames")}}>
         <button type="submit" class="btn btn-secondary btn-sm">Share</button>
       </form>
+    </div>
+  </div>
+{{/if}}
+
+{{#if this.creature.can.purge}}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="h5">For staff</h2>
+      <form class="mb-3" aria-label="Hand it on" {{on "submit" this.hand}}>
+        <label class="form-label" for="pf2-cr-to">Hand it to</label>
+        <input id="pf2-cr-to" type="text" class="form-control mb-2" value={{this.handTo}} {{on "input" (fn this.typed "handTo")}}>
+        <button type="submit" class="btn btn-secondary btn-sm">Hand it on</button>
+      </form>
+      <p>Purging deletes it with its revisions and history. It is refused while an encounter holds it.</p>
+      <button type="button" class="btn btn-danger btn-sm" {{on "click" this.purge}}>Purge {{this.creature.name}}</button>
     </div>
   </div>
 {{/if}}

@@ -14,6 +14,7 @@ export default class Pf2CreatureController extends Controller {
   @tracked shareNames = null;
   @tracked plotmasters = null;
   @tracked approvedFor = 'everyone';
+  @tracked handTo = '';
 
   get creature() {
     return this.model.creature;
@@ -85,6 +86,32 @@ export default class Pf2CreatureController extends Controller {
   @action
   makePublic() {
     this.act('make_public');
+  }
+
+  @action
+  hand(event) {
+    event.preventDefault();
+    this.act('hand', { to: this.handTo.trim() });
+  }
+
+  @action
+  async purge() {
+    if (
+      !window.confirm(
+        `Purge ${this.creature.name}, with its revisions and history?`,
+      )
+    )
+      return;
+
+    let answer = await this.gameApi.requestOne(
+      'pf2CreatureAct',
+      { id: this.creature.id, act: 'purge' },
+      null,
+    );
+    if (answer.error) return;
+
+    this.flashMessages.success(`${this.creature.name} is purged.`);
+    this.router.transitionTo('pf2-creatures');
   }
 
   @action

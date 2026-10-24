@@ -1,0 +1,326 @@
+<div class="row">
+  <div class="col-lg-7">
+    <div class="mb-3">
+      <label class="form-label" for="pf2-ed-name">Name</label>
+      <input id="pf2-ed-name" type="text" class="form-control" value={{this.name}} {{on "input" this.setName}}>
+    </div>
+
+    <ul class="nav nav-tabs mb-3">
+      {{#each this.sections as |one|}}
+        <li class="nav-item">
+          <button type="button" class={{if (eq one.key this.section) "nav-link active" "nav-link"}} {{on "click" (fn this.show one.key)}}>{{one.label}}</button>
+        </li>
+      {{/each}}
+    </ul>
+
+    {{#if (eq this.section "identity")}}
+      <div class="row g-2">
+        <div class="col-sm-3">
+          <label class="form-label" for="pf2-ed-level">Level</label>
+          <input id="pf2-ed-level" type="text" inputmode="numeric" class="form-control" value={{this.block.level}} {{on "input" (fn this.setField "level" "number")}}>
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label" for="pf2-ed-size">Size</label>
+          <select id="pf2-ed-size" class="form-select" {{on "change" (fn this.setField "size" "text")}}>
+            <option value="" selected={{eq this.block.size undefined}}>-</option>
+            {{#each @options.sizes as |size|}}
+              <option value={{size}} selected={{eq size this.block.size}}>{{size}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="col-sm-5">
+          <label class="form-label" for="pf2-ed-rarity">Rarity</label>
+          <select id="pf2-ed-rarity" class="form-select" {{on "change" (fn this.setField "rarity" "text")}}>
+            {{#each @options.rarities as |rarity|}}
+              <option value={{rarity}} selected={{eq rarity this.block.rarity}}>{{rarity}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+      <div class="mb-3 mt-2">
+        <label class="form-label" for="pf2-ed-traits">Traits, separated by commas</label>
+        <input id="pf2-ed-traits" type="text" class="form-control" list="pf2-ed-trait-words" value={{this.traitsText}} {{on "change" (fn this.setField "traits" "list")}}>
+        <datalist id="pf2-ed-trait-words">
+          {{#each @options.traits as |trait|}}<option value={{trait}}></option>{{/each}}
+        </datalist>
+        <small>The bestiary's traits and the setting's ancestries are both known; a trait neither uses is warned of.</small>
+      </div>
+      {{#if this.shapes.length}}
+        <div class="mb-3">
+          <label class="form-label" for="pf2-ed-shape">Starts a fight as</label>
+          <select id="pf2-ed-shape" class="form-select" {{on "change" (fn this.setField "shape" "text")}}>
+            <option value="" selected={{not this.block.shape}}>As its stat block has it</option>
+            {{#each this.shapes as |shape|}}
+              <option value={{shape.value}} selected={{eq shape.value this.block.shape}}>{{shape.label}}</option>
+            {{/each}}
+          </select>
+          <small>Which Strikes it has hangs on its shape. A GM may still name another as it is added, <code>+e/add &lt;name&gt;/&lt;shape&gt;</code>, and it changes shape in a fight with its ability.</small>
+        </div>
+      {{/if}}
+    {{/if}}
+
+    {{#if (eq this.section "defences")}}
+      <div class="row g-2">
+        {{#each this.figures as |one|}}
+          <div class="col-sm-4">
+            <label class="form-label" for="pf2-ed-{{one.key}}">{{one.label}}</label>
+            <input id="pf2-ed-{{one.key}}" type="text" inputmode="numeric" class="form-control" value={{get this.block one.key}} {{on "input" (fn this.setField one.key "number")}}>
+          </div>
+        {{/each}}
+        {{#each this.saveFields as |one|}}
+          <div class="col-sm-4">
+            <label class="form-label" for="pf2-ed-{{one.key}}">{{one.label}}</label>
+            <input id="pf2-ed-{{one.key}}" type="text" inputmode="numeric" class="form-control" value={{get this.block.saves one.key}} {{on "input" (fn this.setField one.path "number")}}>
+          </div>
+        {{/each}}
+      </div>
+      <div class="mb-2 mt-2">
+        <label class="form-label" for="pf2-ed-hpd">Hit point details</label>
+        <input id="pf2-ed-hpd" type="text" class="form-control" value={{this.block.hp_details}} {{on "change" (fn this.setField "hp_details" "text")}}>
+        <small>"regeneration 10 (deactivated by fire)" and "fast healing 5" heal it as its turn starts.</small>
+      </div>
+      <div class="mb-2">
+        <label class="form-label" for="pf2-ed-imm">Immunities, separated by commas</label>
+        <input id="pf2-ed-imm" type="text" class="form-control" value={{this.immunitiesText}} {{on "change" (fn this.setField "immunities" "list")}}>
+      </div>
+      <div class="mb-2">
+        <label class="form-label" for="pf2-ed-weak">Weaknesses: <code>fire 5, cold iron 3</code></label>
+        <input id="pf2-ed-weak" type="text" class="form-control" value={{this.weaknessesText}} {{on "change" (fn this.setResisted "weaknesses")}}>
+      </div>
+      <div class="mb-2">
+        <label class="form-label" for="pf2-ed-res">Resistances: <code>cold 10, physical 5 (except silver or cold iron)</code></label>
+        <input id="pf2-ed-res" type="text" class="form-control" value={{this.resistancesText}} {{on "change" (fn this.setResisted "resistances")}}>
+        <small>In brackets after a value: <code>except</code> what it does not resist, and <code>double</code> what it resists twice as much, each joined by <code>or</code> and the two by a semicolon.</small>
+      </div>
+    {{/if}}
+
+    {{#if (eq this.section "senses")}}
+      <div class="row g-2">
+        <div class="col-sm-4">
+          <label class="form-label" for="pf2-ed-per">Perception</label>
+          <input id="pf2-ed-per" type="text" inputmode="numeric" class="form-control" value={{this.block.perception}} {{on "input" (fn this.setField "perception" "number")}}>
+        </div>
+        <div class="col-sm-8">
+          <label class="form-label" for="pf2-ed-senses">Senses, separated by commas</label>
+          <input id="pf2-ed-senses" type="text" class="form-control" value={{this.sensesText}} {{on "change" (fn this.setField "senses" "list")}}>
+        </div>
+      </div>
+      <div class="mb-2 mt-2">
+        <label class="form-label" for="pf2-ed-speeds">Speeds: <code>land 25, fly 40</code></label>
+        <input id="pf2-ed-speeds" type="text" class="form-control" value={{this.speedText}} {{on "change" (fn this.setField "speeds" "valued")}}>
+      </div>
+      <div class="mb-2">
+        <label class="form-label" for="pf2-ed-skills">Skills: <code>athletics 9, stealth 7</code></label>
+        <input id="pf2-ed-skills" type="text" class="form-control" value={{this.skillsText}} {{on "change" (fn this.setField "skills" "skills")}}>
+      </div>
+    {{/if}}
+
+    {{#if (eq this.section "strikes")}}
+      {{#each this.strikes key="index" as |row|}}
+        <fieldset class="border rounded p-2 mb-3">
+          <legend class="fs-6">Strike {{row.strike.name}}</legend>
+          <div class="row g-2">
+            <div class="col-sm-5">
+              <label class="form-label" for="pf2-ed-sn-{{row.index}}">Name</label>
+              <input id="pf2-ed-sn-{{row.index}}" type="text" class="form-control" value={{row.strike.name}} {{on "change" (fn this.setRow "strikes" row.index "name" "text")}}>
+            </div>
+            <div class="col-sm-2">
+              <label class="form-label" for="pf2-ed-sb-{{row.index}}">Bonus</label>
+              <input id="pf2-ed-sb-{{row.index}}" type="text" inputmode="numeric" class="form-control" value={{row.strike.bonus}} {{on "input" (fn this.setRow "strikes" row.index "bonus" "number")}}>
+            </div>
+            <div class="col-sm-5">
+              <label class="form-label" for="pf2-ed-sd-{{row.index}}">Damage: <code>2d8+5 piercing plus 1d6 persistent fire</code></label>
+              <input id="pf2-ed-sd-{{row.index}}" type="text" class="form-control" value={{row.damageText}} {{on "change" (fn this.setDamage row.index)}}>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="pf2-ed-st-{{row.index}}">Traits</label>
+              <input id="pf2-ed-st-{{row.index}}" type="text" class="form-control" value={{row.traitsText}} {{on "change" (fn this.setRow "strikes" row.index "traits" "list")}}>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="pf2-ed-se-{{row.index}}">What a hit also does: <code>Grab</code></label>
+              <input id="pf2-ed-se-{{row.index}}" type="text" class="form-control" value={{row.effectsText}} {{on "change" (fn this.setRow "strikes" row.index "effects" "list")}}>
+            </div>
+          </div>
+          {{#each row.runs as |one|}}<div class="small mt-1">{{one.part}}: {{one.says}}</div>{{/each}}
+          <div class="mt-2">
+            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "strikes" row.index -1)}}>Move {{row.strike.name}} up</button>
+            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "strikes" row.index 1)}}>Move {{row.strike.name}} down</button>
+            <button type="button" class="btn btn-danger btn-sm" {{on "click" (fn this.removeRow "strikes" row.index)}}>Remove {{row.strike.name}}</button>
+          </div>
+        </fieldset>
+      {{/each}}
+      <button type="button" class="btn btn-primary btn-sm" {{on "click" (fn this.addRow "strikes")}}>Add a Strike</button>
+    {{/if}}
+
+    {{#if (eq this.section "abilities")}}
+      {{#each this.abilities key="index" as |row|}}
+        <fieldset class="border rounded p-2 mb-3">
+          <legend class="fs-6">Ability {{row.ability.name}}</legend>
+          <div class="row g-2">
+            <div class="col-sm-6">
+              <label class="form-label" for="pf2-ed-an-{{row.index}}">Name</label>
+              <input id="pf2-ed-an-{{row.index}}" type="text" class="form-control" value={{row.ability.name}} {{on "change" (fn this.setRow "actions" row.index "name" "text")}}>
+            </div>
+            <div class="col-sm-3">
+              <label class="form-label" for="pf2-ed-ac-{{row.index}}">Cost</label>
+              <select id="pf2-ed-ac-{{row.index}}" class="form-select" {{on "change" (fn this.setCost row.index)}}>
+                {{#each @options.costs as |cost|}}
+                  <option value={{cost}} selected={{eq cost row.cost}}>{{cost}}</option>
+                {{/each}}
+              </select>
+            </div>
+            <div class="col-sm-3">
+              <label class="form-label" for="pf2-ed-at-{{row.index}}">Traits</label>
+              <input id="pf2-ed-at-{{row.index}}" type="text" class="form-control" value={{row.traitsText}} {{on "change" (fn this.setRow "actions" row.index "traits" "list")}}>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="pf2-ed-ax-{{row.index}}">What it does</label>
+              <textarea id="pf2-ed-ax-{{row.index}}" class="form-control" rows="4" {{on "change" (fn this.setText row.index)}}>{{row.text}}</textarea>
+            </div>
+          </div>
+          {{#each row.runs as |one|}}<div class="small mt-1">{{one.says}}</div>{{/each}}
+          <div class="mt-2">
+            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "actions" row.index -1)}}>Move {{row.ability.name}} up</button>
+            <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.moveRow "actions" row.index 1)}}>Move {{row.ability.name}} down</button>
+            <button type="button" class="btn btn-danger btn-sm" {{on "click" (fn this.removeRow "actions" row.index)}}>Remove {{row.ability.name}}</button>
+          </div>
+        </fieldset>
+      {{/each}}
+      <button type="button" class="btn btn-primary btn-sm" {{on "click" (fn this.addRow "actions")}}>Add an ability</button>
+    {{/if}}
+
+    {{#if (eq this.section "spells")}}
+      <p>How often it casts follows how it casts: a prepared spell once for each time it is listed, a spontaneous caster's spells from its slots at each rank, and an innate spell as often as it says. The game counts these castings in a fight and warns past them. A cantrip is cast at half its level, rounded up.</p>
+      {{#each this.castings key="index" as |entry|}}
+        <fieldset class="border rounded p-2 mb-3">
+          <legend class="fs-6">{{entry.casting.name}}</legend>
+          <div class="row g-2">
+            <div class="col-sm-4">
+              <label class="form-label" for="pf2-ed-cn-{{entry.index}}">Name</label>
+              <input id="pf2-ed-cn-{{entry.index}}" type="text" class="form-control" value={{entry.casting.name}} {{on "change" (fn this.setCasting entry.index "name" "text")}}>
+            </div>
+            <div class="col-sm-2">
+              <label class="form-label" for="pf2-ed-ct-{{entry.index}}">Tradition</label>
+              <select id="pf2-ed-ct-{{entry.index}}" class="form-select" {{on "change" (fn this.setCasting entry.index "tradition" "text")}}>
+                {{#each this.traditions as |one|}}<option value={{one}} selected={{eq one entry.casting.tradition}}>{{one}}</option>{{/each}}
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <label class="form-label" for="pf2-ed-cy-{{entry.index}}">Cast as</label>
+              <select id="pf2-ed-cy-{{entry.index}}" class="form-select" {{on "change" (fn this.setCasting entry.index "type" "text")}}>
+                {{#each this.castingTypes as |one|}}<option value={{one}} selected={{eq one entry.casting.type}}>{{one}}</option>{{/each}}
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <label class="form-label" for="pf2-ed-cd-{{entry.index}}">Spell DC</label>
+              <input id="pf2-ed-cd-{{entry.index}}" type="text" inputmode="numeric" class="form-control" value={{entry.casting.dc}} {{on "input" (fn this.setCasting entry.index "dc" "number")}}>
+            </div>
+            <div class="col-sm-2">
+              <label class="form-label" for="pf2-ed-ck-{{entry.index}}">Spell attack</label>
+              <input id="pf2-ed-ck-{{entry.index}}" type="text" inputmode="numeric" class="form-control" value={{entry.casting.attack}} {{on "input" (fn this.setCasting entry.index "attack" "number")}}>
+            </div>
+          </div>
+
+          {{#each entry.ranks key="rank" as |rank|}}
+            <div class="mt-2">
+              <b>{{rank.label}}</b>
+              {{#if (and entry.spontaneous rank.rank)}}
+                <label class="ms-2" for="pf2-ed-cs-{{entry.index}}-{{rank.rank}}">slots</label>
+                <input id="pf2-ed-cs-{{entry.index}}-{{rank.rank}}" type="text" inputmode="numeric" class="form-control form-control-sm d-inline-block w-auto" size="2" value={{rank.slots}} {{on "input" (fn this.setSlots entry.index rank.rank)}}>
+              {{/if}}
+              <ul class="list-unstyled ms-3 mb-0">
+                {{#each rank.spells key="at" as |spell|}}
+                  <li>
+                    {{spell.base}}{{#if spell.announced}} <small>(announced: the GM runs it)</small>{{/if}}
+                    {{#if entry.innate}}
+                      <select class="form-select form-select-sm d-inline-block w-auto" aria-label="How often {{spell.base}} is cast" {{on "change" (fn this.setFrequency entry.index rank.rank spell.at)}}>
+                        {{#each this.frequencies as |often|}}<option value={{often.value}} selected={{eq often.value spell.frequency}}>{{often.label}}</option>{{/each}}
+                      </select>
+                    {{/if}}
+                    <button type="button" class="btn btn-link btn-sm" {{on "click" (fn this.removeSpell entry.index rank.rank spell.at)}}>Remove {{spell.base}}</button>
+                  </li>
+                {{/each}}
+              </ul>
+            </div>
+          {{/each}}
+
+          <form class="row g-2 align-items-end mt-2" aria-label="Find a spell for {{entry.casting.name}}" {{on "submit" (fn this.searchSpells entry.index)}}>
+            <div class="col-sm-5">
+              <label class="form-label" for="pf2-ed-sw-{{entry.index}}">Find a spell</label>
+              <input id="pf2-ed-sw-{{entry.index}}" type="text" class="form-control" value={{entry.search.words}} {{on "input" (fn this.typedSearch entry.index "words")}}>
+            </div>
+            <div class="col-sm-3">
+              <label class="form-label" for="pf2-ed-sr-{{entry.index}}">Add at rank</label>
+              <select id="pf2-ed-sr-{{entry.index}}" class="form-select" {{on "change" (fn this.typedSearch entry.index "rank")}}>
+                <option value="" selected={{eq entry.search.rank ""}}>its own</option>
+                {{#each this.ranks as |one|}}<option value={{one}} selected={{eq (concat one) entry.search.rank}}>{{if one one "cantrip"}}</option>{{/each}}
+              </select>
+            </div>
+            <div class="col-auto"><button type="submit" class="btn btn-secondary">Look</button></div>
+          </form>
+          {{#if entry.search.done}}
+            <ul class="list-unstyled mt-2">
+              {{#each entry.search.results as |found|}}
+                <li>
+                  <button type="button" class="btn btn-primary btn-sm" {{on "click" (fn this.addFound entry.index found)}}>Add</button>
+                  {{found.name}} &middot; {{if found.rank (concat "rank " found.rank) "cantrip"}} &middot; {{pf2-join found.traditions ", "}}{{#unless found.rolled}} &middot; announced{{/unless}}
+                </li>
+              {{else}}
+                <li>The game lists no such spell{{#if entry.casting.tradition}} for the {{entry.casting.tradition}} tradition{{/if}}.</li>
+              {{/each}}
+            </ul>
+            {{#if entry.search.unlisted}}
+              <button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.addWritten entry.index)}}>Add "{{entry.search.words}}" as written</button>
+            {{/if}}
+          {{/if}}
+
+          <div class="mt-2">
+            <button type="button" class="btn btn-danger btn-sm" {{on "click" (fn this.removeRow "spellcasting" entry.index)}}>Remove {{entry.casting.name}}</button>
+          </div>
+        </fieldset>
+      {{/each}}
+      <button type="button" class="btn btn-primary btn-sm" {{on "click" this.addCasting}}>Add spellcasting</button>
+    {{/if}}
+
+    {{#if (eq this.section "notes")}}
+      <label class="form-label" for="pf2-ed-notes">Your notes, which are no part of the stat block</label>
+      <textarea id="pf2-ed-notes" class="form-control" rows="6" {{on "input" this.setNotes}}>{{this.notes}}</textarea>
+    {{/if}}
+
+    <div class="mt-3">
+      <button type="button" class="btn btn-primary" disabled={{not this.canSave}} {{on "click" this.save}}>Save</button>
+      {{#if this.errors.length}}<span class="ms-2">Fix what is listed before it is saved.</span>{{/if}}
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div aria-live="polite">
+      {{#if this.errors.length}}
+        <div class="alert alert-danger">
+          {{#each this.errors as |one|}}<div>{{one.message}}</div>{{/each}}
+        </div>
+      {{/if}}
+      {{#if this.warnings.length}}
+        <div class="alert alert-warning">
+          {{#each this.warnings as |one|}}<div>{{one.message}}</div>{{/each}}
+        </div>
+      {{/if}}
+    </div>
+    <div class="card">
+      <div class="card-body">
+        {{#each this.check.lines as |line|}}<div class="pre-wrap">{{line}}</div>{{/each}}
+      </div>
+    </div>
+    {{#if this.check.bands.length}}
+      <h2 class="h6 mt-3">Against GM Core's tables for its level</h2>
+      <ul class="small list-unstyled">
+        {{#each this.check.bands as |one|}}
+          <li>{{one.figure}} {{one.value}}: {{one.band}}</li>
+        {{/each}}
+      </ul>
+    {{/if}}
+    {{#if this.check.unwritable.length}}
+      <p class="small mt-2">Saved here, but past what the one-line form <code>creature/describe</code> gives can hold: {{pf2-join this.check.unwritable ", "}}.</p>
+    {{/if}}
+  </div>
+</div>

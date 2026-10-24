@@ -1,0 +1,87 @@
+{{page-title (concat "Encounter " this.model.id)}}
+<h1>Encounter {{this.model.id}}</h1>
+
+<p>
+  Round {{this.model.round}}{{#if this.model.current}} &middot; <b>{{this.model.current}}</b>'s turn{{/if}}
+  {{#unless this.model.active}} &middot; ended{{/unless}}
+  &middot; GM: {{this.model.organizer}}
+  {{#if this.model.trusted.length}} &middot; trusted: {{pf2-join this.model.trusted ", "}}{{/if}}
+  <button type="button" class="btn btn-secondary btn-sm" {{on "click" this.refresh}}>Refresh</button>
+</p>
+
+{{#if this.model.difficulty}}
+  <p><b>Difficulty:</b> {{this.model.difficulty}}</p>
+{{/if}}
+
+<div class="table-responsive">
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Init</th>
+      <th>Name</th>
+      <th>Conditions and effects</th>
+      <th>Cover, concealment</th>
+      <th>HP</th>
+      <th><abbr title="Hero Points held in this scene">Hero</abbr></th>
+      <th>This turn</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each this.model.combatants as |one|}}
+      <tr class={{if (eq one.name this.model.current) "table-info"}}>
+        <td>#{{one.id}}</td>
+        <td>{{one.initiative}}</td>
+        <td>
+          {{one.name}}
+          {{#if one.shapes.length}}<br><small>{{pf2-join one.shapes "; "}}</small>{{/if}}
+        </td>
+        <td>
+          {{pf2-join one.conditions ", "}}
+          {{#if one.effects.length}}<br><small>{{pf2-join one.effects ", "}}</small>{{/if}}
+        </td>
+        <td>{{one.cover}}{{#if one.concealment}} {{one.concealment}}{{/if}}</td>
+        <td>{{one.hp}}</td>
+        <td>{{one.hero_points}}</td>
+        <td><small>{{one.turn}}</small></td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+</div>
+
+<details class="pf2-encounter-section">
+  <summary><h2>History ({{this.model.history.length}} {{if (eq this.model.history.length 1) "change" "changes"}})</h2></summary>
+  {{#if this.model.history.length}}
+    <p>What the GM can take back with <code>+e/undo</code>, oldest first. What has been taken back is struck through, and <code>+e/redo</code> puts it back.</p>
+    <ol>
+      {{#each this.model.history as |entry|}}
+        <li>
+          {{#if entry.undone}}<s>{{entry.said}}</s>{{else}}{{entry.said}}{{/if}}
+          {{#if entry.heroes.length}}(Hero Point: {{pf2-join entry.heroes ", "}}){{/if}}
+        </li>
+      {{/each}}
+    </ol>
+  {{else}}
+    <p>Nothing has happened yet.</p>
+  {{/if}}
+</details>
+
+<details class="pf2-encounter-section" open>
+  <summary><h2>Log (the last {{this.model.log.length}} {{if (eq this.model.log.length 1) "line" "lines"}})</h2></summary>
+  <ul class="list-unstyled">
+    {{#each this.model.log as |entry|}}
+      {{#if (eq entry.kind "start")}}
+        <li class="pf2-encounter-start">
+          <b>Encounter {{entry.fields.id}} begins</b>
+          <div>Organizer: {{entry.fields.organizer}} &middot; Declared stat: {{entry.fields.init_stat}}</div>
+          <div>{{entry.fields.instruction}}</div>
+        </li>
+      {{else}}
+        <li class="pre-wrap {{if (eq entry.kind "end") "pf2-encounter-end"}}"><AnsiFormat @text={{entry.text}} /></li>
+      {{/if}}
+    {{/each}}
+  </ul>
+</details>
+
+<p><LinkTo @route="pf2-last-roll">Your last roll, modifier by modifier</LinkTo></p>

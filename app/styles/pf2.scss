@@ -1,0 +1,23 @@
+// The PF2e pages' own classes. A game styles them further in game/styles/custom_style.scss.
+
+// Text whose line breaks are its own: a log line, a stat block, notes.
+.pre-wrap {
+  white-space: pre-wrap;
+}
+
+// A collapsible section whose summary is its heading.
+.pf2-encounter-section > summary {
+  cursor: pointer;
+
+  h2 {
+    display: inline;
+  }
+}
+
+// The start and end of an encounter in its log, set apart from the lines between.
+.pf2-encounter-start,
+.pf2-encounter-end {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid currentColor;
+}

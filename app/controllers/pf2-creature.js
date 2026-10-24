@@ -98,7 +98,7 @@ export default class Pf2CreatureController extends Controller {
   async purge() {
     if (
       !window.confirm(
-        `Purge ${this.creature.name}, with its revisions and history?`,
+        `Permanently delete ${this.creature.name} and all its revisions and history? This can't be undone!`,
       )
     )
       return;
@@ -110,7 +110,7 @@ export default class Pf2CreatureController extends Controller {
     );
     if (answer.error) return;
 
-    this.flashMessages.success(`${this.creature.name} is purged.`);
+    this.flashMessages.success(`${this.creature.name} was deleted.`);
     this.router.transitionTo('pf2-creatures');
   }
 

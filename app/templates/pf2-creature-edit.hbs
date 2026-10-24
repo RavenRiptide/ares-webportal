@@ -2,10 +2,10 @@
 <h1>Edit {{this.model.creature.creature.name}}</h1>
 
 {{#if this.start}}
-  <p>Revision {{this.start.revision}}. Saving makes a new revision; an encounter that has this creature keeps the one it was added as.</p>
+  <p>You're editing revision {{this.start.revision}}. Selecting <strong>Save</strong> will create a new revision. Encounters that already include this creature will not update with your new revision.</p>
   <Pf2CreatureEditor @options={{this.model.options}} @start={{this.start}} />
 {{else}}
   <p>This creature is not one you may change.</p>
 {{/if}}
 
-<p><LinkTo @route="pf2-creature" @model={{concat this.model.creature.creature.ref}}>Back to it</LinkTo></p>
+<p><LinkTo @route="pf2-creature" @model={{concat this.model.creature.creature.ref}}>Back</LinkTo></p>

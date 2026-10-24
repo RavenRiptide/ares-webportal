@@ -1,7 +1,7 @@
 {{page-title "Creatures"}}
 <h1>Creatures</h1>
 
-<p>Your saved creatures, those shared with you, those admins have approved for everyone, and the bestiary. A creature is added to an encounter with <code>+e/add</code> and its name; <code>help creatures</code> has the commands that save and change one.</p>
+<p>Browse your creatures, creatures shared with you, published creatures, and the bestiary. To add one to an encounter, enter <code>encounter/add &lt;name&gt;</code>. For commands to save and edit creatures, see <code>help creatures</code>.</p>
 
 <p>
   {{#if this.model.can_create}}<LinkTo @route="pf2-creature-new" class="btn btn-primary">New creature</LinkTo>{{/if}}
@@ -36,7 +36,7 @@
 
 {{#if this.onBestiary}}
   {{#unless this.model.runs_own}}
-    <p class="alert alert-info">You may add creatures from Monster Core and Monster Core 2. The rest of the bestiary is here to build your own from: clone one with <code>creature/clone &lt;creature&gt;=&lt;new name&gt;</code>, and once an admin approves yours, anyone may add it.</p>
+    <p class="alert alert-info">You may only add creatures from Monster Core and Monster Core 2. To use another bestiary creature, make your own copy with <code>creature/clone &lt;creature&gt;=&lt;new name&gt;</code> and submit it for approval. Once staff approves it, anyone may add it to an encounter.</p>
   {{/unless}}
 {{/if}}
 
@@ -49,7 +49,7 @@
         <th>Level</th>
         <th>Traits</th>
         {{#if this.onBestiary}}
-          <th>You may add it</th>
+          <th>Can add</th>
         {{else}}
           <th>Author</th>
           <th>Status</th>
@@ -63,7 +63,7 @@
           <td>{{one.level}}</td>
           <td>{{pf2-join one.traits ", "}}</td>
           {{#if this.onBestiary}}
-            <td>{{if one.addable "Yes" "No: to build from"}}</td>
+            <td>{{if one.addable "Yes" "No (copy only)"}}</td>
           {{else}}
             <td>{{one.owner}}</td>
             <td>{{one.status}}{{#if one.mine}}{{#unless (eq one.audience "private")}} &middot; shared{{/unless}}{{/if}}</td>
@@ -75,11 +75,11 @@
 </div>
 
   <p>
-    {{this.model.total}} in all.
+    {{this.model.total}} total.
     {{#if this.hasPrevious}}<button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.turn -1)}}>Previous</button>{{/if}}
     Page {{this.model.page}} of {{this.model.pages}}
     {{#if this.hasNext}}<button type="button" class="btn btn-secondary btn-sm" {{on "click" (fn this.turn 1)}}>Next</button>{{/if}}
   </p>
 {{else}}
-  <p>None here. {{#if this.model.can_create}}Save one with <code>creature/save &lt;name&gt;=&lt;description&gt;</code>.{{/if}}</p>
+  <p>No creatures found.{{#if this.model.can_create}}Save one with <code>creature/save &lt;name&gt;=&lt;description&gt;</code>.{{/if}}</p>
 {{/if}}

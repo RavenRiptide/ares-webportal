@@ -53,7 +53,7 @@
 <details class="pf2-encounter-section">
   <summary><h2>History ({{this.model.history.length}} {{if (eq this.model.history.length 1) "change" "changes"}})</h2></summary>
   {{#if this.model.history.length}}
-    <p>What the GM can take back with <code>+e/undo</code>, oldest first. What has been taken back is struck through, and <code>+e/redo</code> puts it back.</p>
+    <p>Encounter actions the GM can reverse with <code>encounter/undo</code>, oldest first. Undone changes are struck through, and <code>encounter/redo</code> restores them.</p>
     <ol>
       {{#each this.model.history as |entry|}}
         <li>
@@ -68,13 +68,13 @@
 </details>
 
 <details class="pf2-encounter-section" open>
-  <summary><h2>Log (the last {{this.model.log.length}} {{if (eq this.model.log.length 1) "line" "lines"}})</h2></summary>
+  <summary><h2>Log (last {{this.model.log.length}} {{if (eq this.model.log.length 1) "line" "lines"}})</h2></summary>
   <ul class="list-unstyled">
     {{#each this.model.log as |entry|}}
       {{#if (eq entry.kind "start")}}
         <li class="pf2-encounter-start">
           <b>Encounter {{entry.fields.id}} begins</b>
-          <div>Organizer: {{entry.fields.organizer}} &middot; Declared stat: {{entry.fields.init_stat}}</div>
+          <div>GM: {{entry.fields.organizer}} &middot; Initiative stat:{{entry.fields.init_stat}}</div>
           <div>{{entry.fields.instruction}}</div>
         </li>
       {{else}}
@@ -84,4 +84,4 @@
   </ul>
 </details>
 
-<p><LinkTo @route="pf2-last-roll">Your last roll, modifier by modifier</LinkTo></p>
+<p><LinkTo @route="pf2-last-roll">See your last roll with all modifiers</LinkTo></p>

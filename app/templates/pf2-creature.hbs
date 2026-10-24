@@ -3,20 +3,20 @@
 
 {{#if (eq this.model.creature.source "saved")}}
   <p>
-    <code>c:{{this.model.creature.id}}</code> &middot; by {{this.model.creature.owner}} &middot; {{this.model.creature.status}}{{#if this.ownApproved}} for its author's storylines{{/if}}
+    <code>c:{{this.model.creature.id}}</code> &middot; by {{this.model.creature.owner}} &middot; {{this.model.creature.status}}{{#if this.ownApproved}} for its author's plots{{/if}}
     &middot; revision {{this.model.creature.revision}}{{#if this.model.creature.can.edit}} of {{this.model.creature.latest}}{{/if}}
     {{#if this.model.creature.published_revision}} &middot; approved: revision {{this.model.creature.published_revision}}{{/if}}
   </p>
 {{else}}
-  <p>From the bestiary.</p>
+  <p>From the creature library.</p>
 {{/if}}
 
 {{#if this.model.addable}}
-  <p>Add it to an encounter you run: <code>{{this.model.add}}</code></p>
+  <p>To add this creature to an encounter you're running, enter <code>{{this.model.add}}</code></p>
 {{else if (eq this.model.creature.source "bestiary")}}
-  <p class="alert alert-info">You may add creatures from Monster Core and Monster Core 2. This one is here to build your own from: <code>creature/clone {{this.model.creature.name}}=&lt;new name&gt;</code>.</p>
+  <p class="alert alert-info">You may only add creatures from Monster Core and Monster Core 2. To use this creature, make your own copy: <code>creature/clone {{this.model.creature.name}}=&lt;new name&gt;</code>.</p>
 {{else if (eq this.model.creature.status "draft")}}
-  <p class="alert alert-info">Not yet approved. Once an admin approves it, anyone may add it.</p>
+  <p class="alert alert-info">Not yet approved. Once staff approves it, anyone may add this creature to an encounter.</p>
 {{/if}}
 
 {{#if this.model.review_note}}
@@ -36,31 +36,31 @@
     <div class="card-body">
       <h2 class="h5">Approval</h2>
       {{#if this.submitted}}
-        <p>Awaiting an admin's approval.</p>
-        <button type="button" class="btn btn-secondary btn-sm" {{on "click" this.withdraw}}>Withdraw the request</button>
+        <p>Awaiting staff approval.</p>
+        <button type="button" class="btn btn-secondary btn-sm" {{on "click" this.withdraw}}>Withdraw approval request</button>
       {{else if this.retired}}
-        <p>Retired: off the lists, and not to be added.</p>
+        <p>Retired: This creature is hidden from lists and cannot be added to encounters.</p>
       {{else}}
         {{#if this.creature.can.make_public}}
-          <p>Approved for your own storylines: you and those you share it with add it, as approved, and nobody else sees it. Making it public lets anyone add it, as it was approved, without asking again.</p>
+          <p>Approved for your plots only. You (and anyone you share it with) can add this creature to encounters, and no one else can see it. Making it public lets anyone add the approved version to an encounter, with no second review.</p>
           <button type="button" class="btn btn-secondary btn-sm mb-3" {{on "click" this.makePublic}}>Make it public</button>
         {{/if}}
         {{#if this.nothingNew}}
-          <p>Its latest revision is the one approved. What you change next waits for the next approval.</p>
+          <p>Your latest revision is approved. If you make any further changes, you will need to submit this creature for approval again.</p>
         {{else}}
-        <p>Once an admin approves it, it is added as it stands then. What you change after waits for the next approval.</p>
+        <p>Staff will review the revision you submit. After this creature is approved, if you make any further changes, you will need to submit this creature for approval again.</p>
         <fieldset class="mb-2">
           <legend class="form-label fs-6">Approved for</legend>
           <div class="form-check">
             <input id="pf2-cr-for-everyone" type="radio" name="pf2-cr-for" class="form-check-input" checked={{eq this.approvedFor "everyone"}} {{on "change" (fn this.choose "everyone")}}>
-            <label class="form-check-label" for="pf2-cr-for-everyone">Everyone: anyone may add it</label>
+            <label class="form-check-label" for="pf2-cr-for-everyone">Everyone</label>
           </div>
           <div class="form-check">
             <input id="pf2-cr-for-author" type="radio" name="pf2-cr-for" class="form-check-input" checked={{eq this.approvedFor "author"}} {{on "change" (fn this.choose "author")}}>
-            <label class="form-check-label" for="pf2-cr-for-author">Only my storylines: me, and those I share it with</label>
+            <label class="form-check-label" for="pf2-cr-for-author">My plots only (me and people I share it with)</label>
           </div>
         </fieldset>
-        <label class="form-label" for="pf2-cr-note">A note for the admins</label>
+        <label class="form-label" for="pf2-cr-note">Note to staff (optional)</label>
         <input id="pf2-cr-note" type="text" class="form-control mb-2" value={{this.note}} {{on "input" (fn this.typed "note")}}>
         <button type="button" class="btn btn-primary btn-sm" {{on "click" this.submit}}>Submit for approval</button>
         {{/if}}
@@ -75,15 +75,15 @@
       <h2 class="h5">Sharing</h2>
       <form aria-label="Share" {{on "submit" this.share}}>
         {{#if this.ownApproved}}
-          <p>Anyone you name here, a co-GM of your storyline, adds it as it was approved.</p>
+          <p>People you list here, such as your plots' co-GMs, can add the approved version to their encounters.</p>
         {{else}}
-          <p>Plotmasters and admins it is shared with add it as it stands, without approval.</p>
+          <p>Plotmasters and staff you share this creature with can add the current version without waiting for approval.</p>
           <div class="form-check mb-2">
             <input id="pf2-cr-pms" type="checkbox" class="form-check-input" checked={{this.sharedWithPlotmasters}} {{on "change" this.toggle}}>
             <label class="form-check-label" for="pf2-cr-pms">Every Plotmaster</label>
           </div>
         {{/if}}
-        <label class="form-label" for="pf2-cr-with">And these, by name, separated by commas</label>
+        <label class="form-label" for="pf2-cr-with">Share with these people (names separated by commas)</label>
         <input id="pf2-cr-with" type="text" class="form-control mb-2" value={{this.shareText}} {{on "input" (fn this.typed "shareNames")}}>
         <button type="submit" class="btn btn-secondary btn-sm">Share</button>
       </form>
@@ -95,12 +95,12 @@
   <div class="card mb-3">
     <div class="card-body">
       <h2 class="h5">For staff</h2>
-      <form class="mb-3" aria-label="Hand it on" {{on "submit" this.hand}}>
-        <label class="form-label" for="pf2-cr-to">Hand it to</label>
+      <form class="mb-3" aria-label="Transfer ownership to" {{on "submit" this.hand}}>
+        <label class="form-label" for="pf2-cr-to">Transfer ownership to</label>
         <input id="pf2-cr-to" type="text" class="form-control mb-2" value={{this.handTo}} {{on "input" (fn this.typed "handTo")}}>
-        <button type="submit" class="btn btn-secondary btn-sm">Hand it on</button>
+        <button type="submit" class="btn btn-secondary btn-sm">Transfer</button>
       </form>
-      <p>Purging deletes it with its revisions and history. It is refused while an encounter holds it.</p>
+      <p>Purging permanently deletes this creature, with all its revisions and history. You can't purge a creature that's in an encounter.</p>
       <button type="button" class="btn btn-danger btn-sm" {{on "click" this.purge}}>Purge {{this.creature.name}}</button>
     </div>
   </div>
@@ -123,6 +123,6 @@
 <p>
   {{#if this.model.creature.can.edit}}<LinkTo @route="pf2-creature-edit" @model={{this.model.creature.ref}} class="btn btn-primary btn-sm">Edit</LinkTo>{{/if}}
   {{#if this.model.creature.can.retire}}<button type="button" class="btn btn-secondary btn-sm" {{on "click" this.retire}}>{{if this.retired "Restore" "Retire"}}</button>{{/if}}
-  {{#if this.model.creature.can.clone}}<LinkTo @route="pf2-creature-new" @query={{hash from=this.model.creature.ref}} class="btn btn-secondary btn-sm">Make a copy to change</LinkTo>{{/if}}
+  {{#if this.model.creature.can.clone}}<LinkTo @route="pf2-creature-new" @query={{hash from=this.model.creature.ref}} class="btn btn-secondary btn-sm">Copy and edit</LinkTo>{{/if}}
   <LinkTo @route="pf2-creatures">All creatures</LinkTo>
 </p>

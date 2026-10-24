@@ -48,7 +48,7 @@ export default class Pf2CreatureEditor extends Component {
 
   sections = [
     { key: 'identity', label: 'Identity' },
-    { key: 'defences', label: 'Defences' },
+    { key: 'defences', label: 'Defenses' },
     { key: 'senses', label: 'Senses and skills' },
     { key: 'strikes', label: 'Strikes' },
     { key: 'abilities', label: 'Abilities' },

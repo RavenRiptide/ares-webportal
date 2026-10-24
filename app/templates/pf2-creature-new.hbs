@@ -1,25 +1,25 @@
 {{page-title "New creature"}}
-<h1>New creature</h1>
+<h1>New Creature</h1>
 
 {{#if this.start}}
   <Pf2CreatureEditor @options={{this.model.options}} @start={{this.start}} />
 {{else}}
-  <p>Four ways to begin. Each opens the editor with something to change.</p>
+  <p>Choose a starting point.</p>
 
   <div class="card mb-3">
     <div class="card-body">
-      <h2 class="h5">From a creature that exists</h2>
-      <p>The quickest way: take something close and change it.</p>
+      <h2 class="h5">Copy an existing creature</h2>
+      <p>The fastest option: start from something similar to what you want and adjust it.</p>
       <form class="row g-2 align-items-end" {{on "submit" this.look}}>
         <div class="col-sm-8">
           <label class="form-label" for="pf2-new-search">Name contains</label>
           <input id="pf2-new-search" type="text" class="form-control" value={{this.search}} {{on "input" (fn this.typed "search")}}>
         </div>
-        <div class="col-auto"><button type="submit" class="btn btn-secondary">Look</button></div>
+        <div class="col-auto"><button type="submit" class="btn btn-secondary">Search</button></div>
       </form>
       {{#each this.found as |one|}}
         <div class="mt-2">
-          <button type="button" class="btn btn-primary btn-sm" {{on "click" (fn this.begin one.ref)}}>Use this</button>
+          <button type="button" class="btn btn-primary btn-sm" {{on "click" (fn this.begin one.ref)}}>Start from this creature</button>
           {{one.name}} &middot; level {{one.level}} &middot; {{if (eq one.source "bestiary") "bestiary" one.owner}}
         </div>
       {{/each}}
@@ -29,17 +29,17 @@
   <div class="card mb-3">
     <div class="card-body">
       <h2 class="h5">From a description</h2>
-      <p>The line you would type after <code>+e/add Name=</code>.</p>
+      <p>The most time-consuming option. Enter a full description in the same format as <code>encounter/add Name=&lt;description&gt;</code>, the command that adds a one-off creature to an encounter.</p>
       <textarea class="form-control mb-2" rows="3" aria-label="Description" {{on "input" (fn this.typed "described")}}>{{this.described}}</textarea>
-      <button type="button" class="btn btn-secondary" {{on "click" (fn this.begin "described" null this.described)}}>Read it</button>
+      <button type="button" class="btn btn-secondary" {{on "click" (fn this.begin "described" null this.described)}}>Start from this description</button>
     </div>
   </div>
 
   {{#if this.roadMaps.length}}
     <div class="card mb-3">
       <div class="card-body">
-        <h2 class="h5">From GM Core's road maps</h2>
-        <p>A role at a level: every figure the road map names at its band in GM Core's tables, and the rest moderate.</p>
+        <h2 class="h5">From GM Core's base road maps</h2>
+        <p>Start a creature from one of <a href="https://2e.aonprd.com/Rules.aspx?ID=2874" target="_blank" rel="noopener noreferrer">GM Core's base road maps</a>. Pick a role and a creature level, then review the recommended values. Great for creating NPCs!</p>
         <div class="row g-2 align-items-end">
           <div class="col-sm-3">
             <label class="form-label" for="pf2-new-rm-level">Level</label>
@@ -53,7 +53,7 @@
               {{/each}}
             </select>
           </div>
-          <div class="col-auto"><button type="button" class="btn btn-secondary" {{on "click" this.beginFromRoadMap}}>Begin</button></div>
+          <div class="col-auto"><button type="button" class="btn btn-secondary" {{on "click" this.beginFromRoadMap}}>Start</button></div>
         </div>
         <p class="mt-2 mb-0"><small>GM Core: {{this.roadMap.says}}</small></p>
       </div>
@@ -68,7 +68,7 @@
           <label class="form-label" for="pf2-new-level">Level</label>
           <input id="pf2-new-level" type="text" inputmode="numeric" class="form-control" value={{this.blankLevel}} {{on "input" (fn this.typed "blankLevel")}}>
         </div>
-        <div class="col-auto"><button type="button" class="btn btn-secondary" {{on "click" (fn this.begin "blank" this.blankLevel)}}>Begin</button></div>
+        <div class="col-auto"><button type="button" class="btn btn-secondary" {{on "click" (fn this.begin "blank" this.blankLevel)}}>Start from scratch</button></div>
       </div>
     </div>
   </div>

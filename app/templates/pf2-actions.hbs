@@ -2,8 +2,8 @@
 <h1>Your Actions</h1>
 
 <p>
-  Use one in an encounter with <code>+e/act &lt;action&gt;=&lt;target&gt;</code>. An action that rolls a
-  check rolls it against the target's defence; one with an effect puts you under it.
+  Use one in an encounter with <code>encounter/act &lt;action&gt;=&lt;target&gt;</code>. Actions that roll a
+  check roll against the target's defense. Actions with an effect apply it to you.
 </p>
 
 {{#each-in this.model.modes as |mode actions|}}
@@ -15,7 +15,7 @@
         <th>Cost</th>
         <th>Rolls</th>
         <th>Against</th>
-        <th>Puts you under</th>
+        <th>Effect on you</th>
       </tr>
     </thead>
     <tbody>

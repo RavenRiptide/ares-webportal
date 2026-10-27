@@ -20,4 +20,20 @@
     <button class="btn btn-warning" {{on 'click' this.resetPassword}}>Reset Password</button>
     
   {{/if}}
+  
+  {{#if this.char.show_status_tab}}
+  <hr>
+  <h3>Status</h3>
+  
+    <div class="form-item">
+        <div class="form-item-label">
+                <b>Is NPC</b>
+        </div>
+    
+        <div class="form-item-entry">
+              <Input @type="checkbox" @checked={{this.char.is_npc}} />
+        </div>
+    </div>
+    
+  {{/if}}
 </div>

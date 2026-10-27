@@ -81,10 +81,26 @@ export default Service.extend(AresConfig, {
     
     reconnect() {
       if (this.connectionRetries < 5) {
-        console.log(`Reconnecting websocket (${this.connectionRetries + 1})`);
-        this.sessionStarted(this.charId);
         this.set('connectionRetries', this.connectionRetries + 1);
+        console.log(`Reconnecting websocket (${this.connectionRetries})`);
+        this.sessionStarted(this.charId);
       }
+    },
+    
+    cleanupSocket() {
+      const oldSocket = this.socket;
+      this.set('socket', null);
+      
+      oldSocket.onopen = null;
+      oldSocket.onmessage = null;
+      oldSocket.onclose = null;
+      oldSocket.onerror = null;
+      try {
+        oldSocket.close();
+      } catch(err) {
+        // Socket closed already or never fully opened.
+      }
+      
     },
     
     sessionStarted(charId) {
@@ -96,11 +112,15 @@ export default Service.extend(AresConfig, {
       
         let socket = this.socket;
         this.set('charId', charId);
+                
         
         if (this.isSocketReady()) {
           console.log("Keeping socket.");
           this.handleConnect();
           return;
+        } else if (this.socket) {
+          console.log("Closing old socket.");
+          this.cleanupSocket();
         }
                 
         try
@@ -179,10 +199,10 @@ export default Service.extend(AresConfig, {
     
     handleSocketClosed(self) {
       let message = 'Your connection to the game has been lost!  You will no longer see updates.  Try reloading the page.  If the problem persists, the game may be down.';
+      self.cleanupSocket();
       self.notify(message, 10, 'error');
       self.set('connected', false);
-      self.set('socket', null);
-      setTimeout(() => self.reconnect(), 5000);      
+      setTimeout(() => self.reconnect(), 10000);
     },
     
     handleConnect() {

@@ -1,0 +1,87 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Edit Barrow Hound</title><link rel="stylesheet" href="mockup.css"></head><body>
+<div class="nav"><b>EMBLEM OF EA</b><span>Scenes</span><span>Characters</span><span>Encounters</span><span class="here">Creatures</span><span>Wiki</span><span>Jobs</span><span class="who">Maren (Plotmaster)</span></div>
+<div class="page">
+<h1>Edit Barrow Hound</h1>
+<div class="bar">
+  <span class="muted">Revision 5 &middot; unsaved changes</span>
+  <span class="push"></span>
+  <span class="btn quiet">Cancel</span><span class="btn go off">Save</span><span class="muted">Save is off while there is an error.</span>
+</div>
+<div class="row">
+<div class="col">
+  <div class="tabs">
+    <span class="tab">Identity</span><span class="tab">Defences</span><span class="tab">Senses and skills</span>
+    <span class="tab on">Strikes <span class="n">2</span></span><span class="tab">Abilities <span class="n">3</span></span><span class="tab">Spells</span><span class="tab">Sharing</span>
+  </div>
+
+  <fieldset><legend>Strike: jaws</legend>
+    <div class="grid g4">
+      <div style="grid-column: span 2"><label>Name <span class="req">*</span></label><span class="in">jaws</span></div>
+      <div><label>Kind</label><span class="in sel">melee</span></div>
+      <div><label>Attack bonus <span class="req">*</span></label><span class="in">+11</span><span class="band">high for level 3</span></div>
+    </div>
+    <h3>Damage</h3>
+    <div class="grid g4">
+      <div><label>Formula <span class="req">*</span></label><span class="in bad" aria-invalid="true">1d10+</span></div>
+      <div><label>Type <span class="req">*</span></label><span class="in sel">piercing</span></div>
+      <div><label>Category</label><span class="in sel">none</span></div>
+      <div style="align-self:end"><span class="btn sm quiet">Remove damage</span></div>
+    </div>
+    <div class="find err" style="margin-top:8px"><b>Formula</b> Write dice and a number, like 1d10+6. The game reads anything else as no damage.</div>
+    <div class="bar"><span class="btn sm quiet">Add damage</span><span class="note">a second row for what the bite also deals: 1d6 persistent bleed, 1d6 fire</span></div>
+    <div class="grid g2">
+      <div><label>Traits</label><span class="in"><span class="chip">reach 10 feet<i>&times;</i></span></span></div>
+      <div><label>What a hit also does</label><span class="in"><span class="chip">Knockdown<i>&times;</i></span></span>
+        <div class="hint">The game offers Knockdown as a Trip when the jaws hit.</div></div>
+    </div>
+    <div class="bar"><span class="btn sm quiet">Move down</span><span class="btn sm quiet">Duplicate</span><span class="btn sm warn">Remove Strike jaws</span><span class="note push">The first Strike is the one <code>+e/as #id=strike</code> uses when none is named.</span></div>
+  </fieldset>
+
+  <fieldset><legend>Strike: claw</legend>
+    <div class="grid g4">
+      <div style="grid-column: span 2"><label>Name <span class="req">*</span></label><span class="in">claw</span></div>
+      <div><label>Kind</label><span class="in sel">melee</span></div>
+      <div><label>Attack bonus <span class="req">*</span></label><span class="in">+11</span><span class="band">high for level 3</span></div>
+    </div>
+    <div class="grid g4" style="margin-top:10px">
+      <div><label>Formula <span class="req">*</span></label><span class="in">1d6+6</span></div>
+      <div><label>Type <span class="req">*</span></label><span class="in sel">slashing</span></div>
+      <div><label>Category</label><span class="in sel">none</span></div>
+      <div style="align-self:end"><span class="band">moderate damage</span></div>
+    </div>
+    <div class="grid g2" style="margin-top:10px">
+      <div><label>Traits</label><span class="in"><span class="chip">agile<i>&times;</i></span><span class="chip">tearing<i>&times;</i></span></span>
+        <div class="find" style="margin-top:6px"><b>tearing</b> is not a trait any creature in the bestiary has. It is kept, and does nothing.</div></div>
+      <div><label>What a hit also does</label><span class="in">&nbsp;</span></div>
+    </div>
+    <div class="bar"><span class="btn sm quiet">Move up</span><span class="btn sm quiet">Duplicate</span><span class="btn sm warn">Remove Strike claw</span></div>
+  </fieldset>
+  <span class="btn quiet">Add a Strike</span>
+</div>
+
+<div class="side" style="flex-basis:420px">
+  <div class="card" role="status">
+    <h3>1 error, 2 warnings</h3>
+    <div class="find err"><b>Strikes &rsaquo; jaws &rsaquo; damage</b> The formula 1d10+ cannot be read.</div>
+    <div class="find"><b>Strikes &rsaquo; claw &rsaquo; traits</b> tearing is not a trait the bestiary has.</div>
+    <div class="find"><b>Abilities &rsaquo; Scent of the Living</b> The game will announce this for the GM to run.</div>
+  </div>
+  <div class="bar"><span class="muted">Preview as</span><span class="btn sm">Normal</span><span class="btn sm quiet">Elite</span><span class="btn sm quiet">Weak</span></div>
+  <div class="sb">
+    <h2>Barrow Hound <span>Creature 3</span></h2>
+    <p><span class="chip">uncommon</span><span class="chip">medium</span><span class="chip">undead</span><span class="chip">beast</span></p>
+    <hr>
+    <p><b>Perception</b> +9<span class="band">moderate</span>; darkvision</p>
+    <p><b>AC</b> 18<span class="band">moderate</span>; <b>Fort</b> +10<span class="band">high</span>, <b>Ref</b> +8<span class="band">moderate</span>, <b>Will</b> +7<span class="band">low</span></p>
+    <p><b>HP</b> 48<span class="band">moderate</span>; <b>Weaknesses</b> vitality 5</p>
+    <p><b>Speed</b> 40 feet</p>
+    <hr>
+    <p><b>Melee</b> jaws +11 (reach 10 feet)<span class="band">high</span>, <b>Damage</b> <span style="color:var(--rose)">1d10+ ?</span> piercing plus Knockdown</p>
+    <p><b>Melee</b> claw +11 (agile, tearing)<span class="band">high</span>, <b>Damage</b> 1d6+6 slashing<span class="band">moderate</span></p>
+    <hr>
+    <p><b>Grave Howl</b> [two actions] &hellip;</p>
+  </div>
+  <p class="cap">The preview and every finding come from the server, a moment after typing stops.</p>
+</div>
+</div>
+</div></body></html>

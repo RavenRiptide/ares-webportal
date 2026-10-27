@@ -1,0 +1,34 @@
+{{!-- Emblem of Ea: an encounter notice - its start, end, new round or turn - laid out from its details.
+     Used by the encounter page's log and the live scene. @text is the line as the game client shows it. --}}
+{{#if (eq @notice "start")}}
+  <div class="pf2-encounter-start">
+    <b>Encounter {{@details.id}} begins</b>
+    <div>GM: {{@details.organizer}} &middot; Initiative stat: {{@details.init_stat}}</div>
+    <div>{{@details.instruction}}</div>
+    <div>Encounter log: <LinkTo @route="pf2-encounter" @model={{@details.id}}>Encounter {{@details.id}}</LinkTo></div>
+    <div>For help with encounters, see <code>help initiative</code> in-client or <LinkTo @route="help-topic" @model="pf2e_combat">Encounters</LinkTo>.</div>
+  </div>
+{{else if (or (eq @notice "round") (eq @notice "turn"))}}
+  <div class="pf2-encounter-{{@notice}}">
+    {{#if (eq @notice "round")}}
+      <b>Round {{@details.round}}</b>
+    {{else}}
+      {{@details.label}}
+    {{/if}}
+    <div>
+      Initiative {{@details.init}} &middot;
+      Turn: <span class="ansi-palette-172-fg">{{@details.current}}</span> &middot;
+      Next: <span class="ansi-cyan-fg">{{@details.next}}</span>
+    </div>
+  </div>
+{{else if (and (eq @notice "end") @details.id)}}
+  <div class="pf2-encounter-end">
+    <b>Encounter {{@details.id}} ends.</b>
+    {{#if @details.with_scene}}
+      <div>Its scene has ended.</div>
+    {{/if}}
+  </div>
+{{else}}
+  {{!-- An end saved before ends had details: its text as the game client shows it. --}}
+  <div class="pre-wrap pf2-encounter-end"><AnsiFormat @text={{@text}} /></div>
+{{/if}}

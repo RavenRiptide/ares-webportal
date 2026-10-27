@@ -14,10 +14,18 @@
   }
 }
 
-// The start and end of an encounter in its log, set apart from the lines between.
+// The start and end of an encounter in its log, and each new round, set apart from the lines between.
 .pf2-encounter-start,
-.pf2-encounter-end {
+.pf2-encounter-end,
+.pf2-encounter-round {
   margin: 0.5rem 0;
   padding: 0.5rem 0.75rem;
   border-left: 3px solid currentColor;
+}
+
+// A turn within a round: marked, but lighter, since a fight has many.
+.pf2-encounter-turn {
+  margin: 0.25rem 0;
+  padding: 0.25rem 0.75rem;
+  border-left: 1px solid color-mix(in srgb, currentColor 50%, transparent);
 }

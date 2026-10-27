@@ -64,7 +64,10 @@
                 {{/if}}
             </div>
         
-            {{#if pose.is_system_pose}}
+            {{!-- Emblem of Ea: an encounter notice - its start, end, round or turn - is laid out from its details. --}}
+            {{#if pose.encounter_notice}}
+                <Pf2EncounterNotice @notice={{pose.encounter_notice}} @details={{pose.encounter_notice_details}} @text={{pose.pose}} />
+            {{else if pose.is_system_pose}}
                 <div class="scene-system-pose">
                 <AnsiFormat @text={{pose.pose}} />
                 </div>

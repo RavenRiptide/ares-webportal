@@ -71,14 +71,10 @@
   <summary><h2>Log (last {{this.model.log.length}} {{if (eq this.model.log.length 1) "line" "lines"}})</h2></summary>
   <ul class="list-unstyled">
     {{#each this.model.log as |entry|}}
-      {{#if (eq entry.kind "start")}}
-        <li class="pf2-encounter-start">
-          <b>Encounter {{entry.fields.id}} begins</b>
-          <div>GM: {{entry.fields.organizer}} &middot; Initiative stat:{{entry.fields.init_stat}}</div>
-          <div>{{entry.fields.instruction}}</div>
-        </li>
+      {{#if entry.notice}}
+        <li><Pf2EncounterNotice @notice={{entry.notice}} @details={{entry.notice_details}} @text={{entry.text}} /></li>
       {{else}}
-        <li class="pre-wrap {{if (eq entry.kind "end") "pf2-encounter-end"}}"><AnsiFormat @text={{entry.text}} /></li>
+        <li class="pre-wrap"><AnsiFormat @text={{entry.text}} /></li>
       {{/if}}
     {{/each}}
   </ul>

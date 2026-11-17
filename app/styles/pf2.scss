@@ -14,8 +14,10 @@
   }
 }
 
-// The start and end of an encounter in its log, and each new round, set apart from the lines between.
+// The start and end of an encounter or exploration in its log, and each new round, set apart from the
+// lines between.
 .pf2-encounter-start,
+.pf2-encounter-explore,
 .pf2-encounter-end,
 .pf2-encounter-round {
   margin: 0.5rem 0;

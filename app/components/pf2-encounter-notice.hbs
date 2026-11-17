@@ -1,4 +1,4 @@
-{{!-- Emblem of Ea: an encounter notice - its start, end, new round or turn - laid out from its details.
+{{!-- Emblem of Ea: an encounter notice - its start (or an exploration's), end, new round or turn - laid out from its details.
      Used by the encounter page's log and the live scene. @text is the line as the game client shows it. --}}
 {{#if (eq @notice "start")}}
   <div class="pf2-encounter-start">
@@ -7,6 +7,14 @@
     <div>{{@details.instruction}}</div>
     <div>Encounter log: <LinkTo @route="pf2-encounter" @model={{@details.id}}>Encounter {{@details.id}}</LinkTo></div>
     <div>For help with encounters, see <code>help initiative</code> in-client or <LinkTo @route="help-topic" @model="pf2e_combat">Encounters</LinkTo>.</div>
+  </div>
+{{else if (eq @notice "explore")}}
+  <div class="pf2-encounter-explore">
+    <b>Exploration {{@details.id}} begins</b>
+    <div>GM: {{@details.organizer}}</div>
+    <div>{{@details.instruction}}</div>
+    <div>Encounter log: <LinkTo @route="pf2-encounter" @model={{@details.id}}>Encounter {{@details.id}}</LinkTo></div>
+    <div>For help with exploring, see <code>help exploration</code> in-client or <LinkTo @route="help-topic" @model="pf2e_exploration">Exploring</LinkTo>.</div>
   </div>
 {{else if (or (eq @notice "round") (eq @notice "turn"))}}
   <div class="pf2-encounter-{{@notice}}">

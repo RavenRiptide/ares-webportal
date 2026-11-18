@@ -53,7 +53,8 @@ export default Controller.extend(AuthenticatedController, ConfirmAction, {
         return;
       }
       this.router.transitionTo('events');
-      this.flashMessages.success('Signed up!');
+      // Emblem of Ea: Custom Ares change: waitlist (eaevents)
+      this.flashMessages.success(response.waitlisted ? 'The event is full. You are on the waitlist.' : 'Signed up!');
     });
   },
         

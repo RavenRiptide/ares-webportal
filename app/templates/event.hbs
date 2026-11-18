@@ -32,10 +32,14 @@
              {{/each}}
         </td>
     </tr>
-    
+
+    {{! Emblem of Ea: Custom Ares change: player count and death consent (eaevents) }}
+    <EaEventInfoRows @event={{this.model}} />
 </table>
 
 <br>
+
+<EaEventConsentAlert @event={{this.model}} /> {{! Emblem of Ea: Custom Ares change (eaevents) }}
 
 {{#if this.model.content_warning}}
 <div class="alert alert-danger"><b>Content Warning:</b> {{this.model.content_warning}}</div>
@@ -45,31 +49,8 @@
 
 <hr>
 
-<h2>Signups</h2>
-
-{{#each this.model.signups as |s|}}
-  <div class="event-signup-details">
- 
-     <div class="event-signup-item event-signup-char">
-       <CharIconInline @char={{s.char}} />
-     </div>
-     
-     
-     {{#if s.can_edit}}
-       <div class="event-signup-item">
-         <button {{on 'click' (fn this.cancelSignup s.char.name)}}><i class="fa fa-trash" aria-label="Cancel Signup"></i></button>
-       </div>
-     {{/if}}
-     
-     {{#if s.comment}}
-       <div class="event-signup-item">
-         <AnsiFormat @text={{s.comment}} />
-       </div>
-     {{/if}}
-     
-  </div>
-  <hr/>
-{{/each}}
+{{! Emblem of Ea: Custom Ares change: roster and waitlist with level and class, in place of the Signups list (eaevents) }}
+<EaEventRoster @event={{this.model}} @onCancel={{this.cancelSignup}} />
 
 {{#if this.isApproved}}
 
@@ -96,7 +77,7 @@
           </div>
       
           <div class="event-signup-item">
-            <button {{on 'click' this.signup}} class="btn btn-secondary">Sign Up</button>
+            <button {{on 'click' this.signup}} class="btn btn-secondary">{{if this.model.is_full "Join Waitlist" "Sign Up"}}</button> {{! Emblem of Ea: Custom Ares change (eaevents) }}
           </div>
         </div>
       

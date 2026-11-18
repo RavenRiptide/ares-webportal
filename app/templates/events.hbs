@@ -1,7 +1,7 @@
 {{page-title 'Events'}}
 <h1>Events</h1>
 
-<p>The events calendar helps you schedule scenes with other players.  Events you've signed up for are indicated with a <i class="fas fa-calendar-check" aria-label="Signed Up"></i> icon.</p>
+<p>The events calendar helps you schedule scenes with other players.  Events you've signed up for are indicated with a <i class="fas fa-calendar-check" aria-label="Signed Up"></i> icon, and events you're on the waitlist for with a <i class="fas fa-hourglass-half" aria-label="On the Waitlist"></i> icon.</p>
 
 <div class="action-buttons">
   {{#if this.isApproved}}
@@ -16,6 +16,7 @@
       <th>Title</th>
       <th>Organizer</th>
       <th>Date/Time</th>
+      <th>Players</th> {{! Emblem of Ea: Custom Ares change (eaevents) }}
       <th>Tags</th>
 </thead>
        
@@ -23,7 +24,10 @@
   {{#each this.model.events as |event|}}
   <tr>
     <td>
-      {{#if event.is_signed_up}}
+      {{! Emblem of Ea: Custom Ares change: waitlist icon (eaevents) }}
+      {{#if event.is_waitlisted}}
+      <i class="fas fa-hourglass-half fa-2x" aria-label="On the Waitlist"></i>
+      {{else if event.is_signed_up}}
       <i class="fas fa-calendar-check fa-2x" aria-label="Signed Up"></i>
       {{/if}}
     </td>
@@ -31,6 +35,9 @@
           <LinkTo @route="event" @model={{event.id}}>{{event.title}}</LinkTo>
           {{#if event.content_warning}}
           <ContentWarningTag @warning={{event.content_warning}} @position="top-right" />
+          {{/if}}
+          {{#if event.death_consent}} {{! Emblem of Ea: Custom Ares change (eaevents) }}
+          <span class="badge rounded-pill bg-danger">DEATH CONSENT</span>
           {{/if}}
       </td>
     
@@ -40,7 +47,11 @@
       <td>
           {{event.start_datetime_local}}
           <br>({{event.start_time_standard}})
-      </td>      
+      </td>
+      <td> {{! Emblem of Ea: Custom Ares change: Players column (eaevents) }}
+          {{event.players}}
+          {{#if event.players_note}}<br><span class="text-muted">{{event.players_note}}</span>{{/if}}
+      </td>
       <td>
         {{#each event.tags as |tag|}}
         <LinkTo @route="wiki-tag" @model={{tag}}>{{tag}}</LinkTo>

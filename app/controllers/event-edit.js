@@ -42,6 +42,8 @@ export default Controller.extend(AuthenticatedController, {
       organizer: this.get('model.event.organizer.name'),
       tags: this.get('model.event.tags'),
       content_warning: this.get('model.event.content_warning'),
+      max_players: this.get('model.event.max_players'), // Emblem of Ea: Custom Ares change (eaevents)
+      death_consent: this.get('model.event.death_consent'), // Emblem of Ea: Custom Ares change (eaevents)
       description: this.get('model.event.description')
     }, null)
     .then( (response) => {

@@ -1,0 +1,20 @@
+{{! Emblem of Ea: the player limit and death-consent fields on the create and edit event pages. @event is any object with max_players and death_consent; the inputs write back to it. }}
+<div class="form-item">
+  <div class="form-item-label">
+    <label for="max_players">Max Players:</label>
+  </div>
+  <div class="form-item-entry">
+    <Input @type="number" min="1" id="max_players" size={{5}} @value={{@event.max_players}} />
+    <p class="hint">Leave blank for no limit. Once the event is full, new sign-ups join the waitlist. If you lower this after people sign up, the most recent sign-ups move to the waitlist. If you raise it, people at the top of the waitlist move onto the roster.</p>
+  </div>
+</div>
+
+<div class="form-item">
+  <div class="form-item-label">
+    Death Consent:
+  </div>
+  <div class="form-item-entry">
+    <label for="death_consent"><Input @type="checkbox" id="death_consent" @checked={{@event.death_consent}} /> Characters in this event can die</label>
+    <p class="hint">Death-consent events show a red badge on the events list and a warning on the event page, so players know before they sign up.</p>
+  </div>
+</div>

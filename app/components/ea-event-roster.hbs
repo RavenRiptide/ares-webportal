@@ -1,0 +1,71 @@
+{{! Emblem of Ea: the event page's roster and waitlist, in place of the stock Signups list. }}
+<h2>Roster {{#if @event.max_players}}<small class="text-muted">{{@event.roster_count}} / {{@event.max_players}}</small>{{/if}}</h2>
+
+{{#each @event.roster as |s|}}
+  <div class="event-signup-details">
+     <div class="event-signup-item">
+       {{s.position}}
+     </div>
+
+     <div class="event-signup-item event-signup-char">
+       <CharIconInline @char={{s.char}} />
+     </div>
+
+     {{#if s.class_label}}
+       <div class="event-signup-item">
+         <span class="badge bg-primary-subtle text-primary-emphasis">{{s.class_label}}</span>
+       </div>
+     {{/if}}
+
+     {{#if s.can_edit}}
+       <div class="event-signup-item">
+         <button type="button" {{on 'click' (fn @onCancel s.char.name)}}><i class="fa fa-trash" aria-label="Cancel Signup"></i></button>
+       </div>
+     {{/if}}
+
+     {{#if s.comment}}
+       <div class="event-signup-item">
+         <AnsiFormat @text={{s.comment}} />
+       </div>
+     {{/if}}
+  </div>
+  <hr/>
+{{/each}}
+
+{{#if @event.waitlist.length}}
+  <h2>Waitlist</h2>
+  <p class="text-muted">The first person on the waitlist moves up automatically when a spot opens.</p>
+
+  <div class="bg-warning-subtle border border-warning rounded px-3 pt-3">
+    {{#each @event.waitlist as |s|}}
+      <div class="event-signup-details">
+         <div class="event-signup-item">
+           <b>{{s.position}}</b>
+         </div>
+
+         <div class="event-signup-item event-signup-char">
+           <CharIconInline @char={{s.char}} />
+         </div>
+
+         {{#if s.class_label}}
+           <div class="event-signup-item">
+             <span class="badge bg-primary-subtle text-primary-emphasis">{{s.class_label}}</span>
+           </div>
+         {{/if}}
+
+         {{#if s.can_edit}}
+           <div class="event-signup-item">
+             <button type="button" {{on 'click' (fn @onCancel s.char.name)}}><i class="fa fa-trash" aria-label="Cancel Signup"></i></button>
+           </div>
+         {{/if}}
+
+         {{#if s.comment}}
+           <div class="event-signup-item">
+             <AnsiFormat @text={{s.comment}} />
+           </div>
+         {{/if}}
+      </div>
+      <hr/>
+    {{/each}}
+  </div>
+{{/if}}

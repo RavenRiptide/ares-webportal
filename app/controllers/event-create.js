@@ -16,8 +16,12 @@ export default Controller.extend(AuthenticatedController, {
   content_warning: '',
   organizer: null,
   warning_tags: [],
-    
+  max_players: '', // Emblem of Ea: Custom Ares change (eaevents)
+  death_consent: false, // Emblem of Ea: Custom Ares change (eaevents)
+
   resetOnExit: function() {
+    this.set('max_players', ''); // Emblem of Ea: Custom Ares change (eaevents)
+    this.set('death_consent', false); // Emblem of Ea: Custom Ares change (eaevents)
     this.set('title', '');
     this.set('date', '');
     this.set('time', '');
@@ -51,7 +55,9 @@ export default Controller.extend(AuthenticatedController, {
       content_warning: this.content_warning,
       organizer: this.organizer ? this.organizer.name : "",
       tags: this.tags,
-      description: this.description 
+      max_players: this.max_players, // Emblem of Ea: Custom Ares change (eaevents)
+      death_consent: this.death_consent, // Emblem of Ea: Custom Ares change (eaevents)
+      description: this.description
     }, null)
     .then( (response) => {
       if (response.error) {

@@ -38,6 +38,13 @@
   <hr/>
 {{/each}}
 
+{{! The roster's average level, for the organizer's encounter math. }}
+{{#if @event.can_manage}}
+  {{#if @event.average_level}}
+    <p><b>Average Level:</b> {{@event.average_level}}</p>
+  {{/if}}
+{{/if}}
+
 {{#if @event.waitlist.length}}
   <h2>Waitlist</h2>
   <p>The first person on the waitlist moves up automatically when a spot opens.</p>

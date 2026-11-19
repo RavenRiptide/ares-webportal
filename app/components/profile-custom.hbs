@@ -1,4 +1,15 @@
+{{#if this.char.custom.show_registration}}
 <div id="registration" class="tab-pane fade">
-    <b>Registration Email:</b> {{{ansi-format text=this.char.custom.alttracker_register}}}
-    <b>Associated Alts:</b> {{{ansi-format text=this.char.custom.alttracker_alts}}}
+    {{!-- The shown values arrive as markdown paragraphs, so the hidden placeholders are
+          wrapped in <p> too; that keeps the layout the same in both states. --}}
+    <div><b>Registration Email:</b></div>
+    {{#if this.registrationShown}}{{{ansi-format text=this.char.custom.alttracker_register}}}{{else}}<p>••••••••</p>{{/if}}
+    <div><b>Associated Alts:</b></div>
+    {{#if this.registrationShown}}{{{ansi-format text=this.char.custom.alttracker_alts}}}{{else}}<p>••••••••</p>{{/if}}
+    <div>
+      <button type="button" class="btn btn-secondary btn-sm" {{on "click" this.toggleRegistration}}>
+        {{if this.registrationShown "Hide" "Show"}}
+      </button>
+    </div>
  </div>
+{{/if}}

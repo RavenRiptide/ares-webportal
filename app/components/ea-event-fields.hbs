@@ -1,4 +1,4 @@
-{{! Emblem of Ea: the player limit and death-consent fields on the create and edit event pages. @event is any object with max_players and death_consent; the inputs write back to it. }}
+{{! Emblem of Ea: the player limit, death consent, and level range fields on the create and edit event pages. @event is any object with max_players, death_consent, min_level, and max_level; the inputs write back to it. }}
 <div class="form-item">
   <div class="form-item-label">
     <label for="max_players">Max Players:</label>
@@ -14,7 +14,46 @@
     Death Consent:
   </div>
   <div class="form-item-entry">
-    <label for="death_consent"><Input @type="checkbox" id="death_consent" @checked={{@event.death_consent}} /> Characters in this event can die</label>
-    <p class="hint">Death-consent events show a red badge on the events list and a warning on the event page, so players know before they sign up.</p>
+    <label for="death_consent"><Input @type="checkbox" id="death_consent" @checked={{@event.death_consent}} /> Characters in this event can die or face lasting consequences</label>
+    <p class="hint">Death-consent events show a red badge on the events list and a warning on the event page, so players know before they sign up.
+      {{#if this.consentWikiPage}}For more information, see <a href="/wiki/{{this.consentWikiPage}}" target="_blank" rel="noopener noreferrer">{{this.consentWikiTitle}}</a>.{{/if}}</p>
+    <p class="hint"><b>Note:</b> If you're not a Plotmaster or staff, send staff a request and get approval before you run a death-consent event.</p>
+  </div>
+</div>
+
+<div class="form-item">
+  <div class="form-item-label">
+    Level Range:
+  </div>
+  <div class="form-item-entry">
+    <label for="min_level">From</label>
+    <select id="min_level" {{on "change" this.changeMin}}>
+      <option value="" selected={{not this.minLevel}}>-</option>
+      {{#each this.levels as |level|}}
+        <option value={{level}} selected={{eq level this.minLevel}}>{{level}}</option>
+      {{/each}}
+    </select>
+    <label for="max_level">To</label>
+    <select id="max_level" {{on "change" this.changeMax}}>
+      <option value="" selected={{not this.maxLevel}}>-</option>
+      {{#each this.levels as |level|}}
+        <option value={{level}} selected={{eq level this.maxLevel}}>{{level}}</option>
+      {{/each}}
+    </select>
+
+    <div class="mt-2">
+      Quick fill:
+      {{#each this.tiers as |tier|}}
+        <button type="button" class="btn btn-sm btn-outline-secondary" {{on "click" (fn this.pickTier tier)}}>{{tier.name}}</button>
+      {{/each}}
+      <button type="button" class="btn btn-sm btn-outline-secondary" {{on "click" this.pickAny}}>Any level</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" {{on "click" this.clearRange}}>Clear</button>
+    </div>
+
+    {{#if this.rangeLabel}}
+      <p class="mt-2">Shows as: <b>{{this.rangeLabel}}</b></p>
+    {{/if}}
+    <p class="hint">Leave blank if level doesn't matter. Click a tier to fill it in, or click several tiers to span them. Characters outside the range can still sign up, but they get a note when they do. If you narrow the range after people sign up, anyone it leaves out gets a notice.
+      {{#if this.wikiPage}}For more information about tiers, see <a href="/wiki/{{this.wikiPage}}" target="_blank" rel="noopener noreferrer">{{this.wikiTitle}}</a>.{{/if}}</p>
   </div>
 </div>

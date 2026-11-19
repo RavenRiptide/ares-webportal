@@ -1,4 +1,4 @@
-{{! Emblem of Ea: player count and death consent rows for the event page's details table. }}
+{{! Emblem of Ea: player count, level range, and death consent rows for the event page's details table. }}
 <tr>
   <td>
     <b>Players:</b>
@@ -7,6 +7,20 @@
     {{@event.players_summary}}
   </td>
 </tr>
+
+{{#if @event.level_range}}
+<tr>
+  <td>
+    <b>Level Range:</b>
+  </td>
+  <td>
+    {{@event.level_range}}
+    {{#if @event.tiers_wiki_page}}
+      <br><small>For more information about tiers, see <LinkTo @route="wiki-page" @model={{@event.tiers_wiki_page}}>{{@event.tiers_wiki_title}}</LinkTo>.</small>
+    {{/if}}
+  </td>
+</tr>
+{{/if}}
 
 {{#if @event.death_consent}}
 <tr>

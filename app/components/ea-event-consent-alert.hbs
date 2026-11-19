@@ -1,4 +1,5 @@
 {{! Emblem of Ea: the death-consent warning on the event page. }}
 {{#if @event.death_consent}}
-<div class="alert alert-danger"><b>Death Consent:</b> Characters in this event can die. By signing up, you agree that your character's death is a possible outcome.</div>
+<div class="alert alert-danger"><b>Death Consent:</b> Characters in this event can die, and what happens in it can have consequences that last after the event ends, such as broken gear that has to be repaired. By signing up, you agree to these outcomes.
+  {{#if @event.death_consent_wiki_page}}For more information, see <LinkTo @route="wiki-page" @model={{@event.death_consent_wiki_page}}>{{@event.death_consent_wiki_title}}</LinkTo>.{{/if}}</div>
 {{/if}}

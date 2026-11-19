@@ -1,5 +1,5 @@
 {{! Emblem of Ea: the event page's roster and waitlist, in place of the stock Signups list. }}
-<h2>Roster {{#if @event.max_players}}<small class="text-muted">{{@event.roster_count}} / {{@event.max_players}}</small>{{/if}}</h2>
+<h2>Roster {{#if @event.max_players}}<small>({{@event.roster_count}}/{{@event.max_players}})</small>{{/if}}</h2>
 
 {{#each @event.roster as |s|}}
   <div class="event-signup-details">
@@ -14,6 +14,12 @@
      {{#if s.class_label}}
        <div class="event-signup-item">
          <span class="badge bg-primary-subtle text-primary-emphasis">{{s.class_label}}</span>
+       </div>
+     {{/if}}
+
+     {{#if s.level_fit}}
+       <div class="event-signup-item">
+         <span class="badge bg-secondary-subtle text-secondary-emphasis fst-italic">{{s.level_fit}}</span>
        </div>
      {{/if}}
 
@@ -34,7 +40,7 @@
 
 {{#if @event.waitlist.length}}
   <h2>Waitlist</h2>
-  <p class="text-muted">The first person on the waitlist moves up automatically when a spot opens.</p>
+  <p>The first person on the waitlist moves up automatically when a spot opens.</p>
 
   <div class="bg-warning-subtle border border-warning rounded px-3 pt-3">
     {{#each @event.waitlist as |s|}}
@@ -50,6 +56,12 @@
          {{#if s.class_label}}
            <div class="event-signup-item">
              <span class="badge bg-primary-subtle text-primary-emphasis">{{s.class_label}}</span>
+           </div>
+         {{/if}}
+
+         {{#if s.level_fit}}
+           <div class="event-signup-item">
+             <span class="badge bg-secondary-subtle text-secondary-emphasis fst-italic">{{s.level_fit}}</span>
            </div>
          {{/if}}
 

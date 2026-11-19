@@ -39,6 +39,9 @@
           {{#if event.death_consent}} {{! Emblem of Ea: Custom Ares change (eaevents) }}
           <span class="badge rounded-pill bg-danger">DEATH CONSENT</span>
           {{/if}}
+          {{#if event.level_range}} {{! Emblem of Ea: Custom Ares change: level range (eaevents) }}
+          <span class="badge rounded-pill bg-info-subtle text-info-emphasis">{{event.level_range}}</span>
+          {{/if}}
       </td>
     
       <td>

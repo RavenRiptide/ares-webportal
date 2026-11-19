@@ -53,8 +53,13 @@ export default Controller.extend(AuthenticatedController, ConfirmAction, {
         return;
       }
       this.router.transitionTo('events');
-      // Emblem of Ea: Custom Ares change: waitlist (eaevents)
-      this.flashMessages.success(response.waitlisted ? 'The event is full. You are on the waitlist.' : 'Signed up!');
+      // Emblem of Ea: Custom Ares change: waitlist and level range (eaevents)
+      if (response.level_note) {
+        let base = response.waitlisted ? 'The event is full. You are on the waitlist.' : "You've signed up.";
+        this.flashMessages.warning(`${base} ${response.level_note}`);
+      } else {
+        this.flashMessages.success(response.waitlisted ? 'The event is full. You are on the waitlist.' : 'Signed up!');
+      }
     });
   },
         
